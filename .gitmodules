@@ -1,0 +1,6 @@
+[submodule "experiments/bench/zkbench"]
+	path = experiments/bench/zkbench
+	url = https://github.com/OrderLab/go-zkbench
+[submodule "experiments/bench/go-zookeeper"]
+	path = experiments/bench/go-zookeeper
+	url = https://github.com/samuel/go-zookeeper
