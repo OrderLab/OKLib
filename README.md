@@ -11,31 +11,29 @@ for systems to catch *new*, unseen semantic violations.
 Table of Contents
 =================
 * [Requirements](#requirements)
-* [Software Dependency](#software-dependency)
-* [Project Structure](#project-structure)
 * [Getting Started Instructions](#getting-started-instructions)
-   * [0. Install required software dependency](#0-install-required-software-dependency)
-   * [1. Clone the repository and Build Oathkeeper (~2 min)](#1-clone-the-repository-and-build-oathkeeper-2min)
-   * [2. Clone the Target System (~2 min)](#2-clone-the-target-system-2min)
-   * [3. Input Meta-info](#3-input-meta-info)
-      * [3.1 Target system config](#31-target-system-config)
-      * [3.2 Test case config](#32-test-case-config)
-   * [4. Execute Tests and Generate Traces (~1 min)](#4-execute-tests-and-generate-traces-1min)
-   * [5. Infer Rules from Traces (~1 min)](#5-infer-rules-from-traces-1min)
-   * [6. Verify Inferred Rules (~20 min)](#6-verify-inferred-rules-20min)
-   * [7. Runtime detection](#7-runtime-detection)
-      * [7.1 Inject failure triggers (~2 min)](#71-inject-failure-triggers-2min)
-      * [7.2 Install Oathkeeper runtime (~1 min)](#72-install-oathkeeper-runtime-1min)
-         * [7.2.1 Add dependency library to class path](#721-add-dependency-library-to-class-path)
-         * [7.2.2 Modify startup scripts](#722-modify-startup-scripts)
-      * [7.3 Load rules (~1 min)](#73-load-rules-1min)
-      * [7.4 Monitoring Detection Results via logs](#74-monitoring-detection-results-via-logs)
-         * [7.4.1 Reproduce failures (~2 min)](#741-reproduce-failures-2min)
-         * [7.4.2 Start up the target system (~1 min)](#742-start-up-the-target-system-1min)
-         * [7.4.3 Check results (~1 min)](#743-check-results-1min)
+   * [0. Install dependencies](#0-install-dependencies)
+   * [1. Clone the Oathkeeper repository](#1-clone-the-oathkeeper-repository)
+   * [2. Build Oathkeeper (~1 min)](#2-build-oathkeeper-1-min)
+   * [3. Get the target system (~2 min)](#3-get-the-target-system-2-min)
+   * [4. Customize configurations to analyze target system](#4-customize-configurations-to-analyze-target-system)
+      * [4.1 Target system config](#41-target-system-config)
+      * [4.2 Test case config](#42-test-case-config)
+   * [5. Execute tests and generate traces (~1 min)](#5-execute-tests-and-generate-traces-1-min)
+   * [6. Infer rules from traces (~1 min)](#6-infer-rules-from-traces-1-min)
+   * [7. Verify inferred rules (~20 min)](#7-verify-inferred-rules-20-min)
+   * [8. Runtime detection](#8-runtime-detection)
+      * [8.1 Inject failure triggers (~2 min)](#81-inject-failure-triggers-2-min)
+      * [8.2 Install Oathkeeper runtime (~1 min)](#82-install-oathkeeper-runtime-1-min)
+         * [8.2.1 Add dependency library to class path](#821-add-dependency-library-to-class-path)
+         * [8.2.2 Modify startup scripts](#822-modify-startup-scripts)
+      * [8.3 Load rules (~1 min)](#83-load-rules-1-min)
+      * [8.4 Monitor detection results](#84-monitor-detection-results)
+         * [8.4.1 Reproduce failures (~2 min)](#841-reproduce-failures-2-min)
+         * [8.4.2 Start up the target system (~1 min)](#842-start-up-the-target-system-1-min)
+         * [8.4.3 Check results (~1 min)](#843-check-results-1-min)
 * [Detailed Instructions](#detailed-instructions)
 * [Known Issues](#known-issues)
-* [Contributors](#contributors)
 * [Publication](#publication)
 
 ## Requirements
@@ -65,7 +63,7 @@ time can vary depending on the machine performance and network bandwidth.
 
 The total time estimated to go through the workflow below is around 35 minutes. 
 
-### 0. Install software dependency
+### 0. Install dependencies
 
 ```bash
 sudo apt-get update
@@ -73,9 +71,15 @@ sudo apt install git maven ant vim openjdk-8-jdk
 sudo update-alternatives --set java $(sudo update-alternatives --list java | grep "java-8")
 ```
 
-Make sure you set JDK to be openjdk-8.
+Make sure you set JDK to be openjdk-8. You should also set the `JAVA_HOME` 
+environment variable properly (and add it to `.bashrc`):
 
-### 1. Clone the repository and Build Oathkeeper (~2min)
+```bash
+export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+echo export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64 >> ~/.bashrc
+```
+
+### 1. Clone the Oathkeeper repository
 
 To clone from github:
 
@@ -84,6 +88,8 @@ git clone https://github.com/OrderLab/OathKeeper.git
 cd OathKeeper
 git submodule update --init --recursive
 ```
+
+### 2. Build Oathkeeper (~1 min)
 
 Oathkeeper uses Maven for project management.
 
@@ -110,32 +116,34 @@ and compilation succeeded.
 [INFO] ------------------------------------------------------------------------
 ```
 
-### 2. Clone the Target System (~2min)
+### 3. Get the target system (~2 min)
 
-Clone a copy of the target system you want to infer rules from.
-We take [Zookeeper](https://github.com/apache/zookeeper) as an example:
+Clone the Git repository for the target system you want to infer rules from. We
+use [Zookeeper](https://github.com/apache/zookeeper) as an example:
 
 ```bash
 git clone git@github.com:apache/zookeeper.git
 cd zookeeper && pwd
 ```
-Last command would print zookeeper root directory path (e.g. `/home/chang/zookeeper`), save the printed path to zookeeper to input at the next step.
 
-No need to compile it at this stage as the tool would re-compile it everytime it switches versions of the target system.
+Record the full path to the ZooKeeper repository (e.g. `/home/chang/zookeeper`),
+which will be used as input in the next step.
 
-### 3. Input Meta-info
+No need to compile ZooKeeper at this stage. Oathkeeper will re-compile the 
+target system during the experiment.
 
+### 4. Customize configurations to analyze target system
 
-#### 3.1 Target system config
+#### 4.1 Target system config
 > :checkered_flag: For Artifact Evaluation: you don't need to go through steps in this subsection as we already prepared related recipes under `conf/samples/`, you only need to modify the file `conf/samples/zk-3.6.1.properties` and change `system_dir_path` to be the absolute path to your target system. For example, if zookeeper is cloned to `/home/chang/zookeeper/`, you should set the config to be `system_dir_path=/home/chang/zookeeper/`. 
 
-If there is no existing config for your target system, you should create a config.
+A configuration is needed to specify the basic information about the target system. 
 
 ```bash
 vim conf/samples/zk-3.6.1.properties
 ```
 
-a sample config file looks like:
+A sample config file looks like:
 ```ini
 #Required (user-specific):
 system_dir_path=/home/chang/zookeeper/
@@ -167,11 +175,13 @@ instrument_state_fields=
 instrument_class_allmethods=
 exclude_class_list=
 ```
-#### 3.2 Test case config
+#### 4.2 Test case config
 
-> :checkered_flag: For Artifact Evaluation: you can skip this part since we already prepared related recipes under `conf/samples/`.
+> :checkered_flag: For Artifact Evaluation: you can skip this subsection as well, since we already prepared the related recipes under `conf/samples/`.
 
-Users need to prepare a list of test cases and fix commit. Note that configurations in recipes of test cases override system configurations. In other words if you need customizing for a specific case, you can re-config in the case config.
+Oathkeeper leverages regression tests to infer semantic rules. Users should
+provide recipes about these test cases. Note that such test case configurations 
+override the target system configurations.
 
 For example, to perform analysis for [ZOOKEEPER-1754](https://issues.apache.org/jira/browse/ZOOKEEPER-1754). 
 
@@ -196,9 +206,9 @@ test_name=org.apache.zookeeper.test.SessionInvalidationTest
 test_trace_prefix=org.apache.zookeeper.test.SessionInvalidationTest
 compile_test_cmd="rm -f src/java/lib/ivy-2.2.0.jar && git apply ${ok_dir}/conf/samples/zk-patches/https.patch && ant clean compile-test"
 ```
-### 4. Execute Tests and Generate Traces (~1min)
+### 5. Execute tests and generate traces (~1 min)
 
-> :warning: WARNING: Before you execute this step, please be aware that the automation scripts in Oathkeeper contains dangerous clean operations to target system repo such as `git reset --hard ` and `git rm --cached -r .`. This is to ensure the repo is clean after checking out different versions of repo using git. It is fine if you start from a fresh new repo of target system. If you have unfinished work in the git repo, you should push to remote.
+> :warning: WARNING: Before you execute this step, be aware that the automation scripts in Oathkeeper applies clean operations to the target system repo, such as `git reset --hard ` and `git rm --cached -r .`. This is to ensure the repo is clean when switching between versions.
 
 For example, to generate traces from [ZOOKEEPER-1208](https://issues.apache.org/jira/browse/ZOOKEEPER-1208). Run following commands under OathKeeper root: 
 
@@ -292,16 +302,15 @@ You should notice some new files (`org.apache.zookeeper.test.SessionInvalidation
 
 
 
-### 5. Infer Rules from Traces (~1min)
+### 6. Infer rules from traces (~1 min)
 
-Then we infer rules.
-For example, to infer rules from [ZOOKEEPER-1208](https://issues.apache.org/jira/browse/ZOOKEEPER-1208).  
+Then we infer rules. For example, to infer rules from [ZOOKEEPER-1208](https://issues.apache.org/jira/browse/ZOOKEEPER-1208).  
 
 ```bash
 ./run_engine.sh infer conf/samples/zk-3.6.1.properties conf/samples/zk-collections/ZK-1208.properties
 ```
 
-Generated output is under `./inv_infer_output`.
+The generated output is under `./inv_infer_output`.
 
 ```json
 {
@@ -331,56 +340,70 @@ Generated output is under `./inv_infer_output`.
 ...
 
 ```
-### 6. Verify Inferred Rules (~20min)
+### 7. Verify inferred rules (~20 min)
 
-Verifying inferred rules can be pretty time-consuming as the tool needs to execute all test cases in the target system and check all inferred rules from last step (it is actually the most time-consuming step). You can optionally speed up by turning on the survivor mode, which prevent failed rules from loading and executing in other test cases, but this would lose skip verifying rules on remaining tests if they are killed pre-maturely.
+Verifying inferred rules can be time-consuming as Oathkeeper needs to execute all
+test cases in the target system and check all inferred rules from the last step. 
+
+You can optionally speed up this step by turning on the survivor mode, which prevents
+failed rules from loading and executing in other test cases. This optimization 
+may pre-maturely kill some legitimate rule due to a bad/flaky test case.
 
 ```bash
 ./run_engine.sh verify conf/samples/zk-3.6.1.properties conf/samples/zk-collections/ZK-1208.properties
 ```
 
 The progress is printed in stdout, such as 
+
 ```
 Spawn test for 10/82
 ...
 ```
 
-Some output like `javassist.CannotCompileException: by java.lang.ClassFormatError` is fine, in most cases they are benign signals for redundant class transformation.
+**Note:** Output like `javassist.CannotCompileException: by java.lang.ClassFormatError` is fine. In most cases, they are benign signals for redundant class transformation.
 
-Generated output is under `./inv_verify_output`. They look similar to results from last step but the list size is greatly reduced. Note that the inference and verification are neither deterministic process. It is common if output numbers are different if re-executed. 
+The generated output is under `./inv_verify_output`. They look similar to
+results from last step, but the list size is greatly reduced. Note that the
+inference and verification are neither deterministic process. It is common if
+output numbers are different if re-executed. 
 
+### 8. Runtime detection
 
-### 7. Runtime detection
+#### 8.1 Inject failure triggers (~2 min)
 
-#### 7.1 Inject failure triggers (<2min)
+This step is for artifact evaluation only. You can skip this step if you are
+users to deploy the tool to production systems.
 
-This step is for artifact evaluation only. You can skip this step if you are users to deploy the tool to production systems.
-
-To test the effectiveness of the tool, we provide some failure reproducing scripts. For basic functionality, we use ZK-1496 as example. In this example, ZooKeeper the ephemeral node that expires is not properly cleaned. At this step we instrument the ZooKeeper source codes to reproduce the failures later:
+To test the effectiveness of the tool, we provide some failure reproducing
+scripts. For basic functionality, we use ZK-1496 as example. In this example,
+ZooKeeper the ephemeral node that expires is not properly cleaned. At this step
+we instrument the ZooKeeper source codes to reproduce the failures later:
 
 ```bash
 cd OathKeeper
 ./misc/scripts/zookeeper/ZK-1496/install_ZK-1496.sh [path_to_OathKeeper_root] [path_to_Zookeeper_root]
 ```
 
-for example, 
+For example, 
 ```bash
 cd OathKeeper
 ./misc/scripts/zookeeper/ZK-1496/install_ZK-1496.sh ~/OathKeeper ~/zookeeper
 ```
 
-Retry if encountering problems.
+Retry if you encounter problems.
 
-#### 7.2 Install Oathkeeper runtime (<1min)
+#### 8.2 Install Oathkeeper runtime (~1 min)
 
-> :checkered_flag: For Artifact Evaluation: you can skip this while 7.2 section and just execute: 
+> :checkered_flag: For Artifact Evaluation: you can just execute and skip the remaining 8.2 section: 
 > ```bash
 > ./run_engine.sh install conf/samples/zk-3.6.1.properties zookeeper
 > ```
 
-##### 7.2.1 Add dependency library to class path
+##### 8.2.1 Add dependency library to class path
 
-To invoke event recording and rule checking functionalities, Oathkeeper runtime and related data structures need to be added, by either copying Oathkeeper packed jar file to the class path of target system:
+To invoke event recording and rule checking functionalities, Oathkeeper runtime
+and related data structures need to be added, by either copying Oathkeeper
+packed jar file to the class path of target system:
 
 ```bash
 cp target/OathKeeper-1.0-SNAPSHOT-jar-with-dependencies.jar [system_class_path]
@@ -392,11 +415,15 @@ or modify class path to include library.
 CLASSPATH="OK_DIR_MACRO/target/*:$CLASSPATH"
 ```
 
-##### 7.2.2 Modify startup scripts
+##### 8.2.2 Modify startup scripts
 
 Many popular distributed systems use scripts to start instances. There are two needed changes.  
 
-First, Oathkeeper needs to instrument classes of target system before they are loaded, thus it must start before any other class. We use a utility class called `MainWrapper` which replaces original Main class. The usage is simple: just use `MainWrapper` as new main class and add original main class name to the list of args. 
+First, Oathkeeper needs to instrument classes of target system before they are
+loaded, thus it must start before any other class. We use a utility class
+called `MainWrapper` which replaces original Main class. The usage is simple:
+just use `MainWrapper` as new main class and add original main class name to
+the list of args. 
 
 Second, some JVM flags need to be added:
 * `-Dok.invmode=prod` 
@@ -415,7 +442,7 @@ For example, to modify for zookeeper 3.6.1, here is an sample on its `bin/zkEnv.
 ```
 
 
-#### 7.3 Load rules (<1min)
+#### 8.3 Load rules (~1 min)
 
 Essentially copy verified rules to `{ok_dir}/inv_prod_input` so the Oathkeeper runtime would load them and check when the system is running.
 
@@ -424,10 +451,12 @@ cp -r inv_verify_output/ inv_prod_input/
 ```
 
 
-#### 7.4 Monitoring Detection Results via logs
+#### 8.4 Monitor detection results
 
-##### 7.4.1 Reproduce failures (~2min)
-This step is for artifact evaluation only. You should execute next step instead if you are users to deploy the tool to production systems.
+##### 8.4.1 Reproduce failures (~2 min)
+
+This step is for artifact evaluation only. If you are users to deploy Oathkeeper 
+to production systems, you should execute the next step instead.
 
 To start a zookeeper instance and reproduce ZK-1496, run:
 
@@ -442,11 +471,16 @@ cd OathKeeper
 ./misc/scripts/zookeeper/ZK-1496/trigger_ZK-1496.sh ~/OathKeeper ~/zookeeper
 ```
 
-The scripts would display signals when reproducing finished. We speed up the procedures in codes for evaluation convenience. Also note that to faithfully mimic this case it requires special clients and a cluster, for evaluation convenience we added minor code changes thus you may experience issues if trying to directly connect to zk instance. You could use `echo dump | nc localhost 2181` to observe the symptom (ephemeral node exists forever).
+The scripts would display signals when reproducing finished. We speed up the
+procedures in codes for evaluation convenience. Also note that to faithfully
+mimic this case it requires special clients and a cluster, for evaluation
+convenience we added minor code changes thus you may experience issues if
+trying to directly connect to zk instance. You could use `echo dump | nc
+localhost 2181` to observe the symptom (ephemeral node exists forever).
 
-##### 7.4.2 Start up the target system (<1min)
+##### 8.4.2 Start up the target system (~1 min)
 
-> :checkered_flag: For Artifact Evaluation: you should skip this step as last step already start instance.
+> :checkered_flag: For Artifact Evaluation: you should skip this step as the step 8.4.1 already started the system instances.
 
 If you want to detect unknown failures in the deployed system, you can start the system as usual. If previous modifications to startup scripts are good, the system instance should work.
 
@@ -457,7 +491,7 @@ cp conf/zoo_sample.cfg conf/zoo.cfg
 bin/zkServer.sh start
 ```
 
-##### 7.4.3 Check results (<1min)
+##### 8.4.3 Check results (~1 min)
 
 The checking result will be printed to stdout (or redirected to logs depending on target system's log configuration, for example, zookeeper saves output to `zookeeper/logs/zookeeper-*.out`). If some invariant fails and report, the log would print failed invariants such as:
 
@@ -467,15 +501,14 @@ Invariant{template=oathkeeper.runtime.template.OpImplyOpTemplate, context=Contex
 ```
 
 ## Detailed Instructions
-Please see the `README_detailed.md` for further instructions.
 
+Please see the [README_detailed.md](README_detailed.md) for further instructions.
 
 ## Known Issues
 
 * Oathkeeper needs to compile and execute old versions of target systems. Such old versions, in some cases, depend on libraries that are already deprecated and no longer accesible, causing the target system not directly compilable. One workaround is to provide interface for users to manually add a patch to modify the project compilation configuration (such as pom.xml) of target system to disable certain modules that blocks compilation.
 
 * Rule inference and verification are memory-consuming process and could trigger a lot of GCs for if test execution trace is very long. We suggest using physical machines with larger memories. 
-
 
 ## Publication
 

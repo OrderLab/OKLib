@@ -1,4 +1,5 @@
 *.swp
+/test_traces/
 
 # Compiled class file
 *.class
