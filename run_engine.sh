@@ -4,8 +4,14 @@
 #constants
 single_command_timeout_threshold=4h
 
-ok_dir=${PWD}
+ok_dir=$(cd "$(dirname "${BASH_SOURCE-$0}")"; pwd)
+
 echo "Setting tool root dir: "${ok_dir}
+
+if [[ -z "$JAVA_HOME" ]]; then
+  export JAVA_HOME=$(readlink -f /usr/bin/javac | sed "s:/bin/javac::")
+  echo "Warning: JAVA_HOME env is not set, inferring it to be $JAVA_HOME"
+fi
 
 # check if we are running this scripts under OathKeeper dir, if not, abort
 # we check by scanning if we can find this run_engine script
