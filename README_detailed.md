@@ -213,19 +213,19 @@ In the paper draft we acknowledged that our tool did not infer useful rules that
 
 ### ZK-3546
 
-Please refer to `experiments/notes/ZK-3546.md`
+Please refer to [experiments/notes/ZK-3546.md](experiments/notes/ZK-3546.md)
 
 ### HDFS-14699
 
-Please refer to `experiments/notes/HDFS-14317.md`
+Please refer to [experiments/notes/HDFS-14317.md](experiments/notes/HDFS-14317.md)
 
 ### HDFS-14633
 
-Please refer to `experiments/notes/HDFS-14633.md`
+Please refer to [experiments/notes/HDFS-14633.md](experiments/notes/HDFS-14633.md)
 
 ### HDFS-14317
 
-Please refer to `experiments/notes/HDFS-14317.md`
+Please refer to [experiments/notes/HDFS-14317.md](experiments/notes/HDFS-14317.md)
 
 ## 3.2 Crosscheck experiment (ZooKeeper only, Offline)
 
