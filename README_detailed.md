@@ -1,70 +1,72 @@
 
 # Detailed instructions for reproducing
 
-This README is for Artifact Evaluation only, which describes detailed instructions to reproduce experiments we describe in the paper. Before you start this part, we assume you already went through the procedures in the main README file.
+This README is for Artifact Evaluation only, which describes detailed
+instructions to reproduce experiments we describe in the paper. Before you
+start this part, we assume you already went through the procedures in the main
+README file.
 
-It is required that you have a 5-node cluster to reproduce these experiments (if not provided by Artifact Evaluation Committee, we will be happy to assist). The hardware and software dependencies remain same as we described in the main `README.md` file. This is a distributed system project and probably you need to be prepared for tedious tasks. Very appreciate your patience.
+It is required that you have a 5-node cluster to reproduce these experiments.
+The hardware and software dependencies remain same as we described in the main
+`README.md` file. 
 
+This is a project about distributed systems, thus the following steps can be 
+tedious. We appreciate your patience.
 
 Table of Contents
 =================
-- [Detailed instructions for reproducing](#detailed-instructions-for-reproducing)
-- [Table of Contents](#table-of-contents)
-- [0. Install and Configure Dependencies](#0-install-and-configure-dependencies)
-  - [Install and Test Tmux  (~5min)](#install-and-test-tmux--5min)
-  - [Install Other Dependencies (~3min)](#install-other-dependencies-3min)
-- [1. Clone ZooKeeper, HDFS, OathKeeper and Modify Config  (~10min)](#1-clone-zookeeper-hdfs-oathkeeper-and-modify-config--10min)
-  - [Clone Systems](#clone-systems)
-  - [Modify Config](#modify-config)
-  - [Compile OathKeeper (~1min)](#compile-oathkeeper-1min)
-  - [Compile Protobuf for HDFS and Add Environment Variable (~5min)](#compile-protobuf-for-hdfs-and-add-environment-variable-5min)
-- [2. Reproducing Sec 9.1 Generation Overview && Sec 9.3 Performance (Offline)](#2-reproducing-sec-91-generation-overview--sec-93-performance-offline)
-  - [Modify config](#modify-config-1)
-  - [Execute (~15h)](#execute-15h)
-- [3. Reproducing Sec 9.2 Checking Newer Violations](#3-reproducing-sec-92-checking-newer-violations)
-  - [3.1 Detect new ones (Online)](#31-detect-new-ones-online)
-    - [ZK-1496](#zk-1496)
-    - [ZK-1667](#zk-1667)
-    - [ZK-3546](#zk-3546)
-      - [Modify config](#modify-config-2)
-      - [Run commands (~5 min)](#run-commands-5-min)
-      - [Shut down instances and Clean up](#shut-down-instances-and-clean-up)
-    - [HDFS-14699](#hdfs-14699)
-      - [Modify config (<1min)](#modify-config-1min)
-      - [Run commands (~20min)](#run-commands-20min)
-      - [Shut down instances and Clean up](#shut-down-instances-and-clean-up-1)
-    - [HDFS-14317](#hdfs-14317)
-      - [Modify config](#modify-config-3)
-      - [Run commands (~15min)](#run-commands-15min)
-      - [Shut down instances and Clean up](#shut-down-instances-and-clean-up-2)
-    - [HDFS-14633](#hdfs-14633)
-      - [Modify config](#modify-config-4)
-      - [Run commands (~15min)](#run-commands-15min-1)
-      - [Shut down instances and Clean up](#shut-down-instances-and-clean-up-3)
-  - [3.2 Crosscheck Expr (ZooKeeper only, Offline)](#32-crosscheck-expr-zookeeper-only-offline)
-    - [Modify config](#modify-config-5)
-    - [Generate traces (~4h)](#generate-traces-4h)
-    - [Run comparison (~30min)](#run-comparison-30min)
-- [4. Reproducing Sec 9.4 Runtime Overhead && 9.5 Rule Activation and False Positive (Online)](#4-reproducing-sec-94-runtime-overhead--95-rule-activation-and-false-positive-online)
-  - [4.1 ZooKeeper](#41-zookeeper)
-    - [Install benchmark and configure (<1min)](#install-benchmark-and-configure-1min)
-    - [Checkout Zookeeper version and compile (~3min)](#checkout-zookeeper-version-and-compile-3min)
-    - [Install Runtime and Rules (<1min)](#install-runtime-and-rules-1min)
-    - [Start workload benchmark (~3min)](#start-workload-benchmark-3min)
-    - [Collect results](#collect-results)
-    - [Clean up](#clean-up)
-    - [Repeat for baseline result](#repeat-for-baseline-result)
-  - [4.2 HDFS](#42-hdfs)
-    - [Checkout and compile (~2min)](#checkout-and-compile-2min)
-    - [Install Runtime and Rules (<1min)](#install-runtime-and-rules-1min-1)
-    - [Start workload benchmark (~3min)](#start-workload-benchmark-3min-1)
-    - [Clean up (<1min)](#clean-up-1min)
-    - [Repeat for baseline result](#repeat-for-baseline-result-1)
- 
+* [0. Install and configure dependencies](#0-install-and-configure-dependencies)
+   * [Install and test tmux  (~5min)](#install-and-test-tmux--5min)
+   * [Install other dependencies (~3min)](#install-other-dependencies-3min)
+* [1. Clone ZooKeeper, HDFS, and modify config  (~10 min)](#1-clone-zookeeper-hdfs-and-modify-config--10-min)
+   * [Compile OathKeeper (~1 min)](#compile-oathkeeper-1-min)
+   * [Compile Protobuf for HDFS and Add Environment Variable (~5min)](#compile-protobuf-for-hdfs-and-add-environment-variable-5min)
+* [2. Reproduce Sec 9.1 Generation Overview &amp;&amp; Sec 9.3 Performance (Offline)](#2-reproduce-sec-91-generation-overview--sec-93-performance-offline)
+   * [Modify config](#modify-config)
+   * [Execute (~15 h)](#execute-15-h)
+* [3. Reproduce Sec 9.2 Checking Newer Violations](#3-reproduce-sec-92-checking-newer-violations)
+   * [3.1 Detect new ones (Online)](#31-detect-new-ones-online)
+      * [ZK-1496](#zk-1496)
+      * [ZK-1667](#zk-1667)
+      * [ZK-3546](#zk-3546)
+         * [Modify config](#modify-config-1)
+         * [Run commands (~5 min)](#run-commands-5-min)
+         * [Shut down instances and clean up](#shut-down-instances-and-clean-up)
+      * [HDFS-14699](#hdfs-14699)
+         * [Modify config (~1 min)](#modify-config-1-min)
+         * [Run commands (~20 min)](#run-commands-20-min)
+         * [Shut down instances and clean up](#shut-down-instances-and-clean-up-1)
+      * [HDFS-14317](#hdfs-14317)
+         * [Modify config](#modify-config-2)
+         * [Run commands (~15 min)](#run-commands-15-min)
+         * [Shut down instances and clean up](#shut-down-instances-and-clean-up-2)
+      * [HDFS-14633](#hdfs-14633)
+         * [Modify config](#modify-config-3)
+         * [Run commands (~15 min)](#run-commands-15-min-1)
+         * [Shut down instances and Clean up](#shut-down-instances-and-clean-up-3)
+   * [3.2 Crosscheck experiment (ZooKeeper only, Offline)](#32-crosscheck-experiment-zookeeper-only-offline)
+      * [Modify config](#modify-config-4)
+      * [Generate traces (~4 h)](#generate-traces-4-h)
+      * [Run comparison (~30 min)](#run-comparison-30-min)
+* [4. Reproduce Sec 9.4 Runtime Overhead &amp;&amp; 9.5 Rule Activation and False Positive (Online)](#4-reproduce-sec-94-runtime-overhead--95-rule-activation-and-false-positive-online)
+   * [4.1 ZooKeeper](#41-zookeeper)
+      * [Install benchmark and configure (~1 min)](#install-benchmark-and-configure-1-min)
+      * [Checkout Zookeeper version and compile (~3 min)](#checkout-zookeeper-version-and-compile-3-min)
+      * [Install runtime and rules (~1 min)](#install-runtime-and-rules-1-min)
+      * [Start workload benchmark (~3 min)](#start-workload-benchmark-3-min)
+      * [Collect results](#collect-results)
+      * [Clean up](#clean-up)
+      * [Repeat for baseline result](#repeat-for-baseline-result)
+   * [4.2 HDFS](#42-hdfs)
+      * [Checkout and compile (~2 min)](#checkout-and-compile-2-min)
+      * [Install runtime and rules (~1 min)](#install-runtime-and-rules-1-min-1)
+      * [Start workload benchmark (~3 min)](#start-workload-benchmark-3-min-1)
+      * [Clean up (~1 min)](#clean-up-1-min)
+      * [Repeat for baseline result](#repeat-for-baseline-result-1)
 
-# 0. Install and Configure Dependencies 
+# 0. Install and configure dependencies 
 
-## Install and Test Tmux  (~5min)
+## Install and test tmux  (~5 min)
 
 We strongly recommend using tmux (a terminal multiplexer) to perform operations and monitor output in parallel. (Another alternative is to use pssh to broadcast commands to all machines) We demonstrate examples with tmux.
 
@@ -100,8 +102,9 @@ Then you can press `ctrl+b` and type `:set synchronize-panes on` and press enter
 > :checkered_flag: Unless specified otherwise, all commands in the following sections need to execute across all nodes. Also we suggest at this step you make sure all nodes can ssh to each other which will be later used to execute remote scripts.
 
 
-## Install Other Dependencies (~3min)
-Reproducing this part requires more dependencies (golang-go for zk benchmark):
+## Install other dependencies (~3min)
+
+Running the experiments require additional dependencies (golang-go for zk benchmark):
 
 ```bash
 sudo apt-get update
@@ -109,22 +112,16 @@ sudo apt-get -y git maven ant vim openjdk-8-jdk golang-go gnuplot
 sudo update-alternatives --set java $(sudo update-alternatives --list java | grep "java-8")
 ```
 
-# 1. Clone ZooKeeper, HDFS, OathKeeper and Modify Config  (~10min)
+# 1. Clone ZooKeeper, HDFS, and modify config  (~10 min)
 
-Here we essentially repeat the first three steps in `Functional` guide but instead on a cluster of nodes. Also we extend evaluation to another system HDFS.
-
-## Clone Systems
+Here we essentially repeat the first three steps in `Functional` guide but
+instead on a cluster of nodes. Also we extend evaluation to another system
+HDFS.
 
 ```bash
-git clone git@github.com:OrderLab/OathKeeper-osdi2022ae.git OathKeeper
 git clone git@github.com:apache/zookeeper.git
 git clone git@github.com:apache/hadoop.git
-
-cd OathKeeper
-git submodule update --init --recursive
 ```
-
-## Modify Config
 
 Modify `conf/samples/zk-3.6.1.properties` and change this line to be the absolute path to Zookeeper root dir, for example
 
@@ -138,7 +135,7 @@ Modify `conf/samples/hdfs-3.2.1.properties` and change this line to be the absol
 system_dir_path=/home/chang/hadoop/
 ```
 
-## Compile OathKeeper (~1min)
+## Compile OathKeeper (~1 min)
 
 ```bash
 cd OathKeeper && mvn package
@@ -165,7 +162,7 @@ source ~/.bashrc
 
 This is important step for evaluating on HDFS. If later you see compilation errors `protoc not found` when compiling HDFS, it is usually due to this is not set properly. 
 
-# 2. Reproducing Sec 9.1 Generation Overview && Sec 9.3 Performance (Offline)
+# 2. Reproduce Sec 9.1 Generation Overview && Sec 9.3 Performance (Offline)
 
 This experiment reproduces the trace generation, rule inference and verification phase on 8 cases of Zookeeper and 10 cases of HDFS. In paper we list the total rule number (Sec 9.1) and execution time (Sec 9.3). Note that since all three phases are non-deterministic execution, the absolute numbers may vary upon each execution. The execution time depends on hardware performance.
 
@@ -183,8 +180,7 @@ For HDFS, modify `conf/samples/hdfs-3.2.1.properties`
 ticket_collection_path=${ok_dir}/conf/samples/hdfs-collections-basic
 ```
 
-
-## Execute (~15h)
+## Execute (~15 h)
 
 ```bash
 nohup bash ./run_engine.sh runall_foreach conf/samples/zk-3.6.1.properties &> ./log_zk &
@@ -212,7 +208,7 @@ cp -r inv_verify_output inv_verify_output_bk
 ```
 
 
-# 3. Reproducing Sec 9.2 Checking Newer Violations
+# 3. Reproduce Sec 9.2 Checking Newer Violations
 ## 3.1 Detect new ones (Online)
 
 This experiment reproduces the runtime detection part (Sec 9.2) result. The steps are similar to what we described in the previous part: install reproducing hooks, install OathKeeper library, start the instance, trigger the failure, check the logs.
@@ -291,7 +287,7 @@ Wait for 20 secs, you should see on leader node our client creates a container n
 
 Check the `zookeeper/logs/zookeeper-*.out` to see detection report for failed invariants. If invariants giving alerts, the detection is successful.
 
-#### Shut down instances and Clean up 
+#### Shut down instances and clean up 
 
 ```bash
 cd zookeeper
@@ -303,7 +299,7 @@ rm -r /tmp/zookeeper/version-2/
 This case reproduces failures of missing redundancy blocks. 
 
 
-#### Modify config (<1min)
+#### Modify config (~1 min)
 We assume the hostnames of 5 nodes are NODE1, NODE2, NODE3, NODE4 and NODE5. Please replace the hostnames in the commands with yours.
 
 In `experiments/reproduce/HDFS-14699/core-site.xml`
@@ -339,7 +335,7 @@ NODE4
 NODE5
 ```
 
-#### Run commands (~20min)
+#### Run commands (~20 min)
 
 Run these commands on all nodes:
 
@@ -365,7 +361,7 @@ The scripts would automatically return results for `bin/hdfs fsck /test -files -
 Check the `hadoop/hadoop-dist/target/hadoop-3.3.0-SNAPSHOT/logs/*.out` to see detection report for failed invariants. If invariants giving alerts, the detection is successful.
 
 
-#### Shut down instances and Clean up 
+#### Shut down instances and clean up 
 
 ```bash
 experiments/run/hdfs/cleanup.sh [path_to_OathKeeper] [path_to_HADOOP] NODE1
@@ -398,7 +394,7 @@ In `experiments/reproduce/HDFS-14317/hdfs-site.xml`
 </property>
 ```
 
-#### Run commands (~15min)
+#### Run commands (~15 min)
 
 Run these commands on all nodes:
 
@@ -424,7 +420,7 @@ Check the `hadoop/hadoop-dist/target/hadoop-3.3.0-SNAPSHOT/logs/*.out` to see de
 
 
 
-#### Shut down instances and Clean up 
+#### Shut down instances and clean up 
 
 ```bash
 experiments/run/hdfs/cleanup.sh [path_to_OathKeeper] [path_to_HADOOP] NODE1
@@ -455,7 +451,7 @@ NODE4
 NODE5
 ```
 
-#### Run commands (~15min)
+#### Run commands (~15 min)
 
 Run these commands on all nodes:
 
@@ -481,7 +477,7 @@ Check the `hadoop/hadoop-dist/target/hadoop-3.3.0-SNAPSHOT/logs/*.out` to see de
 experiments/run/hdfs/cleanup.sh [path_to_OathKeeper] [path_to_HADOOP] NODE1
 ```
 
-## 3.2 Crosscheck Expr (ZooKeeper only, Offline)
+## 3.2 Crosscheck experiment (ZooKeeper only, Offline)
 
 This experiment reproduces the crosschecking result between 22 ZooKeeper cases.
 
@@ -493,7 +489,7 @@ Modify `conf/samples/zk-3.6.1.properties`:
 ticket_collection_path=${ok_dir}/conf/samples/zk-collections-cc
 ```
 
-### Generate traces (~4h)
+### Generate traces (~4 h)
 
 Crosschecking is based on generated traces. We need to run traces first.
 
@@ -502,7 +498,7 @@ Crosschecking is based on generated traces. We need to run traces first.
 ```
 
 
-### Run comparison (~30min)
+### Run comparison (~30 min)
 
 ```bash
 ./run_engine.sh crosscheckall_dynamic conf/samples/zk-3.6.1.properties conf/samples/zk-collections-cc ./inv_verify_output ./trace_output/ &> log_crosscompare
@@ -511,18 +507,18 @@ Crosschecking is based on generated traces. We need to run traces first.
 Generated result is in `inv_checktrace_output`. For each case if `ZK-1208` can detect `ZK-1496`, it would generate a marker file `ZK-1208-ZK-1496_detected`, if not that is `ZK-1208-ZK-1496_undetected`.
 
 Run this command to plot a simple version of `Figure 11` in the paper draft.
+
 ```bash
 sed '/Total detected/!d' log_crosscompare | sed -e 's/Total detected ratio: \(.*\)\/23.*/\1/' | gnuplot -p -e 'set terminal png;plot "/dev/stdin"' > Figure11_simple.png
 ```
 
-
-# 4. Reproducing Sec 9.4 Runtime Overhead && 9.5 Rule Activation and False Positive (Online)
+# 4. Reproduce Sec 9.4 Runtime Overhead && 9.5 Rule Activation and False Positive (Online)
 
 This experiment reproduces the result of other metrics during OathKeeper runtime detection. Note that the overhead is directly affected by the number of loaded invariants (the more rules loaded , the throughput is worse).
 
 ## 4.1 ZooKeeper
 
-### Install benchmark and configure (<1min)
+### Install benchmark and configure (~1 min)
 
 Assume you put OathKeeper root at `~/OathKeeper`
 ```bash
@@ -552,11 +548,9 @@ runs = 5
 server.0=NODE5:2181
 ```
 
-
 For zookeeper cluster configuration, refer to same settings in ZK-3546 [Modify config](#modify-config-2).
 
-
-### Checkout Zookeeper version and compile (~3min)
+### Checkout Zookeeper version and compile (~3 min)
 
 ```bash
 cd zookeeper
@@ -564,7 +558,7 @@ git stash && git checkout release-3.6.1
 mvn clean package -DskipTests
 ```
 
-### Install Runtime and Rules (<1min)
+### Install runtime and rules (~1 min)
 
 ```bash
 cd OathKeeper
@@ -572,7 +566,7 @@ cd OathKeeper
 rm -rf inv_prod_input && mkdir inv_prod_input && cp -r inv_verify_output_bk/ZK-* inv_prod_input/
 ```
 
-### Start workload benchmark (~3min)
+### Start workload benchmark (~3 min)
 
 Run on all nodes (the script would automatically start the instances):
 
@@ -597,8 +591,6 @@ Checking finished, succCount:.. failCount: .. inactiveCount: ..
 
 Active ratio = 1-inactiveCount/(succCount+failCount+inactiveCount)
 
-
-
 ### Clean up
 ```bash
 cd zookeeper
@@ -606,14 +598,12 @@ bin/zkServer.sh stop
 rm -r /tmp/zookeeper/version-2/
 ```
 
-
 ### Repeat for baseline result
 Repeat above steps but do not install OathKeeper and rules
 
 ## 4.2 HDFS
 
-
-### Checkout and compile (~2min)
+### Checkout and compile (~2 min)
 We assume you already configured in HDFS-14699 and will reuse the scripts and config in HDFS-14699.
 
 ```bash
@@ -622,7 +612,7 @@ experiments/run/hdfs/cleanup.sh [path_to_OathKeeper] [path_to_HADOOP] NODE1
 ```
 
 
-### Install Runtime and Rules (<1min) 
+### Install runtime and rules (~1 min) 
 
 ```bash
 ./run_engine.sh install conf/samples/hdfs-3.2.1.properties hdfs
@@ -630,7 +620,7 @@ rm -rf inv_prod_input && mkdir inv_prod_input && cp -r inv_verify_output_bk/HDFS
 ```
 
 
-### Start workload benchmark (~3min)
+### Start workload benchmark (~3 min)
 
 Run on all nodes:
 ```bash
@@ -658,7 +648,7 @@ If so, the throughput is 16000/90=177.77 op/s.
 
 (If you encounter issues of low resource exceptions and HDFS cluster is forced to enter safe mode, try to reduce benchmark size in the file `OathKeeper/experiments/run/hdfs/throughput.sh` or provide more resources.)
 
-### Clean up (<1min)
+### Clean up (~1 min)
 
 ```bash
 experiments/run/hdfs/cleanup.sh ~/OathKeeper/ ~/hadoop/ NODE1
@@ -666,4 +656,3 @@ experiments/run/hdfs/cleanup.sh ~/OathKeeper/ ~/hadoop/ NODE1
 
 ### Repeat for baseline result
 Repeat above steps but do not install OathKeeper and rules
-
