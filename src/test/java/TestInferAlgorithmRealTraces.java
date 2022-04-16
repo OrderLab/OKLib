@@ -22,6 +22,8 @@ public class TestInferAlgorithmRealTraces {
     @Before
     public void generateAll()
     {
+        System.setProperty("ok.ok_root_abs_path", System.getProperty("user.dir"));
+
         System.setOut(new PrintStream(outContent));
         System.setErr(new PrintStream(errContent));
 
