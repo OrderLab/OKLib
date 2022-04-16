@@ -1,97 +1,71 @@
-
 # Source code repository for the Oathkeeper project
 
 ## Overview
 
-Oathkeeper is a tool to infer likely execution trace invariants from system
- test execution, to detect silent semantic violations in the production. 
-
-Oathkeeper leverages *templates* to infer system *rules*.
-
-This README describes the basic workflow for users and Artifact Evaluation `Artifacts Functional` requirements (which only takes a single machine to reproduce). For `Results Reproduced` goal, we recorded instructions in the other `README_detailed.md` file (which requires a 5-node cluster).
-
+Oathkeeper is a runtime verification toolchain to detect silent semantic
+violations in distributed systems. For a given system, Oathkeeper first
+leverages the *old* silent semantic failures in this system to infer the
+underlying essential semantic rules. It then enforces these rules at runtime
+for systems to catch *new*, unseen semantic violations.
 
 Table of Contents
 =================
-- [Source code repository for the Oathkeeper project](#source-code-repository-for-the-oathkeeper-project)
-  - [Overview](#overview)
-- [Table of Contents](#table-of-contents)
-  - [Requirements](#requirements)
-  - [Software Dependency](#software-dependency)
-  - [Project Structure](#project-structure)
-  - [Getting Started Instructions](#getting-started-instructions)
-    - [0. Install required software dependency](#0-install-required-software-dependency)
-    - [1. Clone the repository and Build Oathkeeper (~2min)](#1-clone-the-repository-and-build-oathkeeper-2min)
-    - [2. Clone the Target System (~2min)](#2-clone-the-target-system-2min)
-    - [3. Input Meta-info](#3-input-meta-info)
-      - [3.1 Target system config](#31-target-system-config)
-      - [3.2 Test case config](#32-test-case-config)
-    - [4. Execute Tests and Generate Traces (~1min)](#4-execute-tests-and-generate-traces-1min)
-    - [5. Infer Rules from Traces (~1min)](#5-infer-rules-from-traces-1min)
-    - [6. Verify Inferred Rules (~20min)](#6-verify-inferred-rules-20min)
-    - [7. Runtime detection](#7-runtime-detection)
-      - [7.1 Inject failure triggers (<2min)](#71-inject-failure-triggers-2min)
-      - [7.2 Install Oathkeeper runtime (<1min)](#72-install-oathkeeper-runtime-1min)
-        - [7.2.1 Add dependency library to class path](#721-add-dependency-library-to-class-path)
-        - [7.2.2 Modify startup scripts](#722-modify-startup-scripts)
-      - [7.3 Load rules (<1min)](#73-load-rules-1min)
-      - [7.4 Monitoring Detection Results via logs](#74-monitoring-detection-results-via-logs)
-        - [7.4.1 Reproduce failures (~2min)](#741-reproduce-failures-2min)
-        - [7.4.2 Start up the target system (<1min)](#742-start-up-the-target-system-1min)
-        - [7.4.3 Check results (<1min)](#743-check-results-1min)
-  - [Detailed Instructions](#detailed-instructions)
-  - [Known Issues](#known-issues)
-  - [Contributors](#contributors)
-  - [Publication](#publication)
-
+* [Requirements](#requirements)
+* [Software Dependency](#software-dependency)
+* [Project Structure](#project-structure)
+* [Getting Started Instructions](#getting-started-instructions)
+   * [0. Install required software dependency](#0-install-required-software-dependency)
+   * [1. Clone the repository and Build Oathkeeper (~2 min)](#1-clone-the-repository-and-build-oathkeeper-2min)
+   * [2. Clone the Target System (~2 min)](#2-clone-the-target-system-2min)
+   * [3. Input Meta-info](#3-input-meta-info)
+      * [3.1 Target system config](#31-target-system-config)
+      * [3.2 Test case config](#32-test-case-config)
+   * [4. Execute Tests and Generate Traces (~1 min)](#4-execute-tests-and-generate-traces-1min)
+   * [5. Infer Rules from Traces (~1 min)](#5-infer-rules-from-traces-1min)
+   * [6. Verify Inferred Rules (~20 min)](#6-verify-inferred-rules-20min)
+   * [7. Runtime detection](#7-runtime-detection)
+      * [7.1 Inject failure triggers (~2 min)](#71-inject-failure-triggers-2min)
+      * [7.2 Install Oathkeeper runtime (~1 min)](#72-install-oathkeeper-runtime-1min)
+         * [7.2.1 Add dependency library to class path](#721-add-dependency-library-to-class-path)
+         * [7.2.2 Modify startup scripts](#722-modify-startup-scripts)
+      * [7.3 Load rules (~1 min)](#73-load-rules-1min)
+      * [7.4 Monitoring Detection Results via logs](#74-monitoring-detection-results-via-logs)
+         * [7.4.1 Reproduce failures (~2 min)](#741-reproduce-failures-2min)
+         * [7.4.2 Start up the target system (~1 min)](#742-start-up-the-target-system-1min)
+         * [7.4.3 Check results (~1 min)](#743-check-results-1min)
+* [Detailed Instructions](#detailed-instructions)
+* [Known Issues](#known-issues)
+* [Contributors](#contributors)
+* [Publication](#publication)
 
 ## Requirements
-* OS and JDK: Oathkeeper (and the target systems tested) is developed and tested under **Ubuntu 18.04** and **JDK 8**. We experienced some unknown crash issues when trying to execute builtin tests on JDK 11. We tested a few functionalities on macOS Catalina (10.15.7) but the test is not complete. 
 
-* Hardware: The basic workflow of Oathkeeper described in this README can be done in just one single local machine.To reproduce the failures in distributed systems and test, we recommend you use a cluster of physical machines. If Artifact Evaluation Committee does not provide available clusters we would be happy to provide access to our cluster. 
+* OS and JDK:
+  - Oathkeeper is developed and tested under **Ubuntu 18.04** and **JDK 8**. 
+  - Other systems and newer JDKs may also work (JDK 11 may fail for unknown reasons). We tested a few functionalities on macOS Catalina (10.15.7) but the test is not complete. 
 
-* Other dependency: Oathkeeper compiles old versions of target systems thus it could be affected when legacy version of dependent libraries of target system drop support. This is actually not a rare issue if target system is open-source software with years' history. We discuss details in the [Known Issues](#known-issues) section. 
+* Hardware: 
+  - The basic workflow of Oathkeeper described in this README, which should satisfy the `Artifacts Functional` requirements, can be done in just one single node.
+  - To reproduce the failures in our evaluated distributed systems and meet the `Results Reproduced` requirements, we recommend that you use a **cluster of 5 nodes**. 
 
-## Software Dependency
 * Git (>= 2.16.2, version control)
 * Apache Maven (>= 3.6.3, for OathKeeper compilation)
 * Apache Ant (>= 1.10.9, artifact testing only, for zookeeper compilation)
 * JDK8 (openjdk recommended)
 
-See [0. Install required software dependency](#0-install-required-software-dependency) for manual instructions. Or you can run automated installation scripts (ubuntu only) after cloning the OathKeeper repo:
-
-```bash
-./prerequisite.sh
-```
-
-## Project Structure
-
-As required by "Completeness" requirement in Artifact Evaluation, here we highlight the relations of modules and functionalities described in the paper.
-
-* `src` contains main java codes to implement tool functionality
-  * `src/main/java/oathkeeper/runtime/DynamicClassModifier.java` is the dynamic instrumentation module, which is described in the paper `Section 8.2 Instrumentation and Trace Generation`
-  * `src/main/java/oathkeeper/engine/tester/TestEngine.java` is the test scheduler to schedule test execution to generate traces, which is described in the paper `Section 8.2 Instrumentation and Trace Generation`
-  * `src/main/java/oathkeeper/engine/InferEngine.java` is the rule inference module, which is described in the paper `Section 8.3 Template-Driven Inference`
-  * `src/main/java/oathkeeper/engine/tester/TestEngine.java` also serves as entry for rule validation. Checking logic is in `src/main/java/oathkeeper/runtime/RuntimeChecker.java`, which is described in the paper `Section 8.4 Rule Validation`
-  * `src/main/java/oathkeeper/runtime/RuntimeChecker.java` also handles production detection, as described in `Section 8.5 Runtime Checking`
-  * The technical details described in `Section 8.6 Optimization` are inlined with existing module implementation and do not have a seperate module. 
-
-* `conf` contains pre-set sample configurations
-
-* `experiments` contains scripts to reproduce the experiments
-
-* `misc` contains helper scripts
-
 ## Getting Started Instructions
 
-The instructions are listed as follows.
-For most instructions below we provide automated commands in scripts for a couple of popular versions of two exercised systems ZooKeeper and HDFS. We use this flag :checkered_flag: to highlight automation scripts for Artifact Evaluation.
+For most instructions below we provide automated commands in scripts for a
+couple of popular versions of two exercised systems ZooKeeper and HDFS. 
+We use this flag :checkered_flag: to highlight automation scripts for Artifact
+Evaluation.
 
-There is roughly estimated execution time for each step. The real execution time can vary depending on the machine performance and network bandwidth.
+There is roughly estimated execution time for each step. The real execution
+time can vary depending on the machine performance and network bandwidth.
 
 The total time estimated to go through the workflow below is around 35 minutes. 
 
-### 0. Install required software dependency
+### 0. Install software dependency
 
 ```bash
 sudo apt-get update
@@ -99,14 +73,14 @@ sudo apt install git maven ant vim openjdk-8-jdk
 sudo update-alternatives --set java $(sudo update-alternatives --list java | grep "java-8")
 ```
 
-Make sure you set JDK to be openjdk-8. 
+Make sure you set JDK to be openjdk-8.
 
 ### 1. Clone the repository and Build Oathkeeper (~2min)
 
 To clone from github:
 
 ```bash
-git clone git@github.com:OrderLab/OathKeeper-osdi2022ae.git OathKeeper
+git clone https://github.com/OrderLab/OathKeeper.git
 cd OathKeeper
 git submodule update --init --recursive
 ```
@@ -503,9 +477,6 @@ Please see the `README_detailed.md` for further instructions.
 * Rule inference and verification are memory-consuming process and could trigger a lot of GCs for if test execution trace is very long. We suggest using physical machines with larger memories. 
 
 
-## Contributors
-Oathkeeper is developed by Chang Lou (chlou@jhu.edu) and Prof. Ryan Huang 
-(huang@cs.jhu.edu) from OrderLab, Johns Hopkins University. 
-
 ## Publication
-Demystifying and Checking Silent Semantic Violations in Large Distributed Systems. Chang Lou, Yuzhuo Jing, Peng Huang. OSDI 2022
+
+> Chang Lou, Yuzhuo Jing, and Peng Huang. **Demystifying and Checking Silent Semantic Violations in Large Distributed Systems**. To appear in Proceedings of the 16th USENIX Symposium on Operating Systems Design and Implementation (OSDI '22), Carlsbad, CA, USA, July 2022.
