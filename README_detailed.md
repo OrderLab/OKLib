@@ -298,7 +298,7 @@ runs = 5
 server.0=NODE5:2181
 ```
 
-For zookeeper cluster configuration, refer to same settings in ZK-3546 [Modify config](#modify-config-2).
+For zookeeper cluster configuration, refer to same settings in ZK-3546 [Modify config](experiments/notes/ZK-3546.md#modify-config).
 
 ### Checkout Zookeeper version and compile (~3 min)
 
