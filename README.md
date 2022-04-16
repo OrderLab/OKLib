@@ -40,7 +40,7 @@ Table of Contents
 
 * OS and JDK:
   - Oathkeeper is developed and tested under **Ubuntu 18.04** and **JDK 8**. 
-  - Other systems and newer JDKs may also work (JDK 11 may fail for unknown reasons). We tested a few functionalities on macOS Catalina (10.15.7) but the test is not complete. 
+  - Other systems and newer JDKs may also work. We tested a few functionalities on macOS Catalina (10.15.7) but the test is not complete. 
 
 * Hardware: 
   - The basic workflow of Oathkeeper described in this README, which should satisfy the `Artifacts Functional` requirements, can be done in just one single node.
