@@ -116,7 +116,7 @@ Here we essentially repeat the first three steps in `Functional` guide but inste
 ## Clone Systems
 
 ```bash
-git clone git@github.com:OrderLab/OathKeeper-osdi2022ae.git OathKeeper
+git clone git@github.com:OrderLab/OathKeeper
 git clone git@github.com:apache/zookeeper.git
 git clone git@github.com:apache/hadoop.git
 
