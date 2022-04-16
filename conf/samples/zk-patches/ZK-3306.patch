@@ -1,0 +1,29 @@
+diff --git a/zookeeper-server/src/main/java/org/apache/zookeeper/server/DataTree.java b/zookeeper-server/src/main/java/org/apache/zookeeper/server/DataTree.java
+index debfe907..8f672776 100644
+--- a/zookeeper-server/src/main/java/org/apache/zookeeper/server/DataTree.java
++++ b/zookeeper-server/src/main/java/org/apache/zookeeper/server/DataTree.java
+@@ -1249,8 +1249,11 @@ public void serializeNodeData(OutputArchive oa, String path, DataNode node) thro
+         oa.writeRecord(node, "node");
+     }
+ 
+-    public void serialize(OutputArchive oa, String tag) throws IOException {
++    public void serializeAcls(OutputArchive oa) throws IOException {
+         aclCache.serialize(oa);
++    }
++
++    public void serializeNodes(OutputArchive oa) throws IOException {
+         serializeNode(oa, new StringBuilder(""));
+         // / marks end of stream
+         // we need to check if clear had been called in between the snapshot.
+@@ -1259,6 +1262,11 @@ public void serialize(OutputArchive oa, String tag) throws IOException {
+         }
+     }
+ 
++    public void serialize(OutputArchive oa, String tag) throws IOException {
++        serializeAcls(oa);
++        serializeNodes(oa);
++    }
++
+     public void deserialize(InputArchive ia, String tag) throws IOException {
+         aclCache.deserialize(ia);
+         nodes.clear();

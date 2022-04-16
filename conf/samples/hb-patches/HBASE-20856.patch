@@ -1,0 +1,291 @@
+diff --git a/pom.xml b/pom.xml
+old mode 100755
+new mode 100644
+index 8bb0f86b21..cf9d178b6c
+--- a/pom.xml
++++ b/pom.xml
+@@ -1,4 +1,4 @@
+-<?xml version="1.0" encoding="UTF-8"?>
++<?xml version='1.0' encoding='UTF-8'?>
+ <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+ <!--
+ /**
+@@ -87,7 +87,6 @@
+     <module>hbase-external-blockcache</module>
+     <module>hbase-shaded</module>
+     <module>hbase-spark</module>
+-    <module>hbase-archetypes</module>
+     <module>hbase-metrics-api</module>
+     <module>hbase-metrics</module>
+     <module>hbase-spark-it</module>
+@@ -747,18 +746,6 @@
+           <artifactId>buildnumber-maven-plugin</artifactId>
+           <version>${buildnumber.maven.version}</version>
+         </plugin>
+-        <plugin>
+-          <groupId>org.codehaus.mojo</groupId>
+-          <artifactId>findbugs-maven-plugin</artifactId>
+-          <version>${findbugs.maven.version}</version>
+-          <!--NOTE: Findbugs 3.0.0 requires jdk7-->
+-          <configuration>
+-            <excludeFilterFile>${project.basedir}/../dev-support/findbugs-exclude.xml</excludeFilterFile>
+-            <findbugsXmlOutput>true</findbugsXmlOutput>
+-            <xmlOutput>true</xmlOutput>
+-            <effort>Max</effort>
+-          </configuration>
+-        </plugin>
+         <plugin>
+           <groupId>org.codehaus.mojo</groupId>
+           <artifactId>build-helper-maven-plugin</artifactId>
+@@ -850,7 +837,7 @@
+                     </goals>
+                   </pluginExecutionFilter>
+                   <action>
+-                    <ignore></ignore>
++                    <ignore/>
+                   </action>
+                 </pluginExecution>
+                 <pluginExecution>
+@@ -863,7 +850,7 @@
+                     </goals>
+                   </pluginExecutionFilter>
+                   <action>
+-                    <ignore />
++                    <ignore/>
+                   </action>
+                 </pluginExecution>
+                 <pluginExecution>
+@@ -877,7 +864,7 @@
+                     </goals>
+                   </pluginExecutionFilter>
+                   <action>
+-                    <ignore />
++                    <ignore/>
+                   </action>
+                 </pluginExecution>
+                   <pluginExecution>
+@@ -1222,21 +1209,6 @@
+       </plugin>
+       <!-- Special configuration for findbugs just in the parent so
+       the filter file location can be more general (see definition in pluginManagement) -->
+-      <plugin>
+-        <groupId>org.codehaus.mojo</groupId>
+-        <artifactId>findbugs-maven-plugin</artifactId>
+-        <executions>
+-          <execution>
+-            <inherited>false</inherited>
+-            <goals>
+-              <goal>findbugs</goal>
+-            </goals>
+-            <configuration>
+-              <excludeFilterFile>${basedir}/dev-support/findbugs-exclude.xml</excludeFilterFile>
+-            </configuration>
+-          </execution>
+-        </executions>
+-      </plugin>
+       <plugin>
+         <groupId>org.apache.maven.plugins</groupId>
+         <artifactId>maven-checkstyle-plugin</artifactId>
+@@ -1380,7 +1352,7 @@
+             <phase>site</phase>
+             <configuration>
+               <target name="rename file">
+-                <move file="${project.reporting.outputDirectory}/book.pdf" tofile="${project.reporting.outputDirectory}/apache_hbase_reference_guide.pdf" />
++                <move file="${project.reporting.outputDirectory}/book.pdf" tofile="${project.reporting.outputDirectory}/apache_hbase_reference_guide.pdf"/>
+               </target>
+             </configuration>
+             <goals>
+@@ -1574,7 +1546,7 @@
+     <surefire.testFailureIgnore>false</surefire.testFailureIgnore>
+     <test.output.tofile>true</test.output.tofile>
+     <surefire.timeout>900</surefire.timeout>
+-    <test.exclude.pattern></test.exclude.pattern>
++    <test.exclude.pattern/>
+     <!-- default Xmx value is 2800m. Use -Dsurefire.Xmx=xxg to run tests with different JVM Xmx value -->
+     <surefire.Xmx>2800m</surefire.Xmx>
+     <surefire.cygwinXmx>2800m</surefire.cygwinXmx>
+@@ -2327,30 +2299,7 @@
+         <jdk>1.8</jdk>
+       </activation>
+       <build>
+-        <pluginManagement>
+-          <plugins>
+-            <plugin>
+-              <groupId>org.codehaus.mojo</groupId>
+-              <artifactId>findbugs-maven-plugin</artifactId>
+-              <version>3.0.0</version>
+-              <!--NOTE: Findbugs 3.0.0 requires jdk7-->
+-              <configuration>
+-                <excludeFilterFile>${project.basedir}/../dev-support/findbugs-exclude.xml</excludeFilterFile>
+-                <findbugsXmlOutput>true</findbugsXmlOutput>
+-                <xmlOutput>true</xmlOutput>
+-                <effort>Max</effort>
+-              </configuration>
+-              <dependencies>
+-                <dependency>
+-                  <groupId>com.github.spotbugs</groupId>
+-                  <artifactId>spotbugs</artifactId>
+-                  <version>${spotbugs.version}</version>
+-                </dependency>
+-              </dependencies>
+-            </plugin>
+-          </plugins>
+-        </pluginManagement>
+-      </build>
++        </build>
+     </profile>
+     <!-- profile activated by the Jenkins patch testing job -->
+     <profile>
+@@ -3168,7 +3117,7 @@
+         <surefire.skipSecondPart>true</surefire.skipSecondPart>
+         <surefire.firstPartGroups>org.apache.hadoop.hbase.testclassification.MiscTests
+         </surefire.firstPartGroups>
+-        <surefire.secondPartGroups></surefire.secondPartGroups>
++        <surefire.secondPartGroups/>
+       </properties>
+     </profile>
+     <profile>
+@@ -3184,7 +3133,7 @@
+         <surefire.firstPartGroups>
+           org.apache.hadoop.hbase.testclassification.CoprocessorTests
+         </surefire.firstPartGroups>
+-        <surefire.secondPartGroups></surefire.secondPartGroups>
++        <surefire.secondPartGroups/>
+       </properties>
+     </profile>
+     <profile>
+@@ -3199,7 +3148,7 @@
+         <surefire.skipSecondPart>true</surefire.skipSecondPart>
+         <surefire.firstPartGroups>org.apache.hadoop.hbase.testclassification.ClientTests
+         </surefire.firstPartGroups>
+-        <surefire.secondPartGroups></surefire.secondPartGroups>
++        <surefire.secondPartGroups/>
+       </properties>
+     </profile>
+     <profile>
+@@ -3214,7 +3163,7 @@
+         <surefire.skipSecondPart>true</surefire.skipSecondPart>
+         <surefire.firstPartGroups>org.apache.hadoop.hbase.testclassification.MasterTests
+         </surefire.firstPartGroups>
+-        <surefire.secondPartGroups></surefire.secondPartGroups>
++        <surefire.secondPartGroups/>
+       </properties>
+     </profile>
+     <profile>
+@@ -3229,7 +3178,7 @@
+         <surefire.skipSecondPart>true</surefire.skipSecondPart>
+         <surefire.firstPartGroups>org.apache.hadoop.hbase.testclassification.MapredTests
+         </surefire.firstPartGroups>
+-        <surefire.secondPartGroups></surefire.secondPartGroups>
++        <surefire.secondPartGroups/>
+       </properties>
+     </profile>
+     <profile>
+@@ -3244,7 +3193,7 @@
+         <surefire.skipSecondPart>true</surefire.skipSecondPart>
+         <surefire.firstPartGroups>org.apache.hadoop.hbase.testclassification.MapReduceTests
+         </surefire.firstPartGroups>
+-        <surefire.secondPartGroups></surefire.secondPartGroups>
++        <surefire.secondPartGroups/>
+       </properties>
+     </profile>
+     <profile>
+@@ -3260,7 +3209,7 @@
+         <surefire.firstPartGroups>
+           org.apache.hadoop.hbase.testclassification.RegionServerTests
+         </surefire.firstPartGroups>
+-        <surefire.secondPartGroups></surefire.secondPartGroups>
++        <surefire.secondPartGroups/>
+       </properties>
+     </profile>
+     <profile>
+@@ -3276,7 +3225,7 @@
+         <surefire.firstPartGroups>
+           org.apache.hadoop.hbase.testclassification.VerySlowMapReduceTests
+         </surefire.firstPartGroups>
+-        <surefire.secondPartGroups></surefire.secondPartGroups>
++        <surefire.secondPartGroups/>
+       </properties>
+     </profile>
+ 
+@@ -3293,7 +3242,7 @@
+         <surefire.firstPartGroups>
+           org.apache.hadoop.hbase.testclassification.VerySlowRegionServerTests
+         </surefire.firstPartGroups>
+-        <surefire.secondPartGroups></surefire.secondPartGroups>
++        <surefire.secondPartGroups/>
+       </properties>
+     </profile>
+ 
+@@ -3309,7 +3258,7 @@
+         <surefire.skipSecondPart>true</surefire.skipSecondPart>
+         <surefire.firstPartGroups>org.apache.hadoop.hbase.testclassification.FilterTests
+         </surefire.firstPartGroups>
+-        <surefire.secondPartGroups></surefire.secondPartGroups>
++        <surefire.secondPartGroups/>
+       </properties>
+     </profile>
+     <profile>
+@@ -3324,7 +3273,7 @@
+         <surefire.skipSecondPart>true</surefire.skipSecondPart>
+         <surefire.firstPartGroups>org.apache.hadoop.hbase.testclassification.IOTests
+         </surefire.firstPartGroups>
+-        <surefire.secondPartGroups></surefire.secondPartGroups>
++        <surefire.secondPartGroups/>
+       </properties>
+     </profile>
+     <profile>
+@@ -3339,7 +3288,7 @@
+         <surefire.skipSecondPart>true</surefire.skipSecondPart>
+         <surefire.firstPartGroups>org.apache.hadoop.hbase.testclassification.RestTests
+         </surefire.firstPartGroups>
+-        <surefire.secondPartGroups></surefire.secondPartGroups>
++        <surefire.secondPartGroups/>
+       </properties>
+     </profile>
+     <profile>
+@@ -3354,7 +3303,7 @@
+         <surefire.skipSecondPart>true</surefire.skipSecondPart>
+         <surefire.firstPartGroups>org.apache.hadoop.hbase.testclassification.RPCTests
+         </surefire.firstPartGroups>
+-        <surefire.secondPartGroups></surefire.secondPartGroups>
++        <surefire.secondPartGroups/>
+       </properties>
+     </profile>
+     <profile>
+@@ -3370,7 +3319,7 @@
+         <surefire.firstPartGroups>
+           org.apache.hadoop.hbase.testclassification.ReplicationTests
+         </surefire.firstPartGroups>
+-        <surefire.secondPartGroups></surefire.secondPartGroups>
++        <surefire.secondPartGroups/>
+       </properties>
+     </profile>
+     <profile>
+@@ -3385,7 +3334,7 @@
+         <surefire.skipSecondPart>true</surefire.skipSecondPart>
+         <surefire.firstPartGroups>org.apache.hadoop.hbase.testclassification.SecurityTests
+         </surefire.firstPartGroups>
+-        <surefire.secondPartGroups></surefire.secondPartGroups>
++        <surefire.secondPartGroups/>
+       </properties>
+     </profile>
+     <profile>
+@@ -3400,7 +3349,7 @@
+         <surefire.skipSecondPart>true</surefire.skipSecondPart>
+         <surefire.firstPartGroups>org.apache.hadoop.hbase.testclassification.FlakeyTests
+         </surefire.firstPartGroups>
+-        <surefire.secondPartGroups></surefire.secondPartGroups>
++        <surefire.secondPartGroups/>
+       </properties>
+     </profile>
+     <profile>
+@@ -3415,7 +3364,7 @@
+         <surefire.skipSecondPart>true</surefire.skipSecondPart>
+         <surefire.firstPartGroups>org.apache.hadoop.hbase.testclassification.ZKTests
+         </surefire.firstPartGroups>
+-        <surefire.secondPartGroups></surefire.secondPartGroups>
++        <surefire.secondPartGroups/>
+       </properties>
+     </profile>
+ 

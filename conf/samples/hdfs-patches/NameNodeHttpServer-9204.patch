@@ -1,0 +1,23 @@
+# this patch is to fix getPackage returns null issue in cases older
+diff --git a/hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/namenode/NameNodeHttpServer.java b/hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/namenode/NameNodeHttpServer.java
+index 6bd98689717..1a5e47557a8 100644
+--- a/hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/namenode/NameNodeHttpServer.java
++++ b/hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/namenode/NameNodeHttpServer.java
+@@ -88,8 +88,8 @@ private void initWebHdfs(Configuration conf) throws IOException {
+         + ")");
+ 
+     // add webhdfs packages
+-    httpServer.addJerseyResourcePackage(NamenodeWebHdfsMethods.class
+-        .getPackage().getName() + ";" + Param.class.getPackage().getName(),
++    httpServer.addJerseyResourcePackage( "org.apache.hadoop.hdfs.server.namenode.web.resources"
++                    + ";" + "org.apache.hadoop.hdfs.web.resources",
+         pathSpec);
+   }
+ 
+@@ -277,4 +277,4 @@ static StartupProgress getStartupProgressFromContext(
+   public static HAServiceProtocol.HAServiceState getNameNodeStateFromContext(ServletContext context) {
+     return getNameNodeFromContext(context).getServiceState();
+   }
+-}
+\ No newline at end of file
++}

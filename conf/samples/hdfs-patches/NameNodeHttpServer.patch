@@ -1,0 +1,16 @@
+# this patch is to fix getPackage returns null issue
+diff --git a/hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/namenode/NameNodeHttpServer.java b/hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/namenode/NameNodeHttpServer.java
+index 84229e7c374..9904cee40e6 100644
+--- a/hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/namenode/NameNodeHttpServer.java
++++ b/hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/namenode/NameNodeHttpServer.java
+@@ -104,8 +104,8 @@ private void initWebHdfs(Configuration conf) throws IOException {
+     }
+ 
+     // add webhdfs packages
+-    httpServer.addJerseyResourcePackage(NamenodeWebHdfsMethods.class
+-        .getPackage().getName() + ";" + Param.class.getPackage().getName(),
++    httpServer.addJerseyResourcePackage( "org.apache.hadoop.hdfs.server.namenode.web.resources"
++                    + ";" + "org.apache.hadoop.hdfs.web.resources",
+         pathSpec);
+   }
+ 

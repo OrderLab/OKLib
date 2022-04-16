@@ -1,0 +1,99 @@
+diff --git a/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-jobclient/src/test/java/org/apache/hadoop/hdfs/NNBenchWithoutMR.java b/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-jobclient/src/test/java/org/apache/hadoop/hdfs/NNBenchWithoutMR.java
+index af16177..9958f09 100644
+--- a/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-jobclient/src/test/java/org/apache/hadoop/hdfs/NNBenchWithoutMR.java
++++ b/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-jobclient/src/test/java/org/apache/hadoop/hdfs/NNBenchWithoutMR.java
+@@ -20,6 +20,7 @@ package org.apache.hadoop.hdfs;
+ 
+ import java.io.IOException;
+ import java.util.Date;
++import java.util.ArrayList;
+ 
+ import org.apache.hadoop.conf.Configuration;
+ import org.apache.hadoop.fs.FSDataInputStream;
+@@ -62,6 +63,39 @@ public class NNBenchWithoutMR {
+   private static Path taskDir = null;
+   private static byte[] buffer;
+   private static long maxExceptionsPerFile = 200;
++
++  static class Throughput {
++    private ArrayList<Integer> th = null;
++    private long startTime = 0;
++    private long lastBytes = 0;
++
++    public Throughput() {
++      startTime = System.currentTimeMillis();
++      th = new ArrayList<Integer>();
++      lastBytes = 0;
++    }
++    public void written(long nbytes) {
++      int blocks = (int)((nbytes + lastBytes) / bytesPerBlock);
++      lastBytes = (nbytes + lastBytes) % bytesPerBlock;
++      int sec = (int)((System.currentTimeMillis() - startTime) / 1000);
++      while (th.size() < sec + 1)
++        th.add(0);
++      th.set(sec, th.get(sec) + blocks);
++    }
++    public void done() {
++      if (lastBytes != 0) {
++        th.set(th.size(), th.get(th.size()) + 1);
++        lastBytes = 0;
++      }
++    }
++    public void print() {
++      System.out.print("Throughput of every second:");
++      for (int i = 0; i < th.size(); i++)
++        System.out.print(" " + th.get(i));
++      System.out.println();
++    }
++  }
++
+     
+   /**
+    * Returns when the current number of seconds from the epoch equals
+@@ -97,7 +131,7 @@ public class NNBenchWithoutMR {
+    *
+    * @return the number of exceptions caught
+    */
+-  static int createWrite() {
++  static int createWrite(Throughput th) {
+     int totalExceptions = 0;
+     FSDataOutputStream out = null;
+     boolean success;
+@@ -122,12 +156,14 @@ public class NNBenchWithoutMR {
+         toBeWritten -= nbytes;
+         try { // only try once
+           out.write(buffer, 0, nbytes);
++          th.written(nbytes);
+         } catch (IOException ioe) {
+           totalExceptions++;
+           handleException("writing to file #" + index, ioe,
+                   ++singleFileExceptions);
+         }
+       }
++      th.done();
+       do { // close file until is succeeds
+         try {
+           out.close();
+@@ -339,12 +375,13 @@ public class NNBenchWithoutMR {
+     int exceptions = 0;
+     barrier(); // wait for coordinated start time
+     execTime = new Date();
++    Throughput th = new Throughput();
+     System.out.println("Job started: " + startTime);
+     if (operation.equals("createWrite")) {
+       if (!fileSys.mkdirs(taskDir)) {
+         throw new IOException("Mkdirs failed to create " + taskDir.toString());
+       }
+-      exceptions = createWrite();
++      exceptions = createWrite(th);
+     } else if (operation.equals("openRead")) {
+       exceptions = openRead();
+     } else if (operation.equals("rename")) {
+@@ -359,6 +396,7 @@ public class NNBenchWithoutMR {
+     System.out.println("Job ended: " + endTime);
+     duration = (endTime.getTime() - execTime.getTime()) /1000;
+     System.out.println("The " + operation + " job took " + duration + " seconds.");
++    th.print();
+     System.out.println("The job recorded " + exceptions + " exceptions.");
+   }
+ }

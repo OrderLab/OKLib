@@ -1,0 +1,37 @@
+diff --git a/bin/zkEnv.sh b/bin/zkEnv.sh
+index 8d93a50c..8ae27924 100755
+--- a/bin/zkEnv.sh
++++ b/bin/zkEnv.sh
+@@ -137,6 +137,7 @@ then
+     CLASSPATH=`cygpath -wp "$CLASSPATH"`
+ fi
+ 
++CLASSPATH="OK_DIR_MACRO/target/*:$CLASSPATH"
+ #echo "CLASSPATH=$CLASSPATH"
+ 
+ # default heap for zookeeper server
+diff --git a/bin/zkServer.sh b/bin/zkServer.sh
+index ec3db140..643c6a81 100755
+--- a/bin/zkServer.sh
++++ b/bin/zkServer.sh
+@@ -42,6 +42,7 @@ then
+     JMXLOCALONLY=false
+ fi
+ 
++JMXDISABLE="true"
+ if [ "x$JMXDISABLE" = "x" ] || [ "$JMXDISABLE" = 'false' ]
+ then
+   echo "ZooKeeper JMX enabled by default" >&2
+@@ -155,10 +156,11 @@ start)
+          exit 1
+       fi
+     fi
++    OKFLAGS="-Dok.invmode=prod -Dok.conf=CONF_PATH_MACRO -Dok.ok_root_abs_path=OK_DIR_MACRO -Dok.target_system_abs_path=SYS_DIR_MACRO"
+     nohup "$JAVA" $ZOO_DATADIR_AUTOCREATE "-Dzookeeper.log.dir=${ZOO_LOG_DIR}" \
+     "-Dzookeeper.log.file=${ZOO_LOG_FILE}" "-Dzookeeper.root.logger=${ZOO_LOG4J_PROP}" \
+     -XX:+HeapDumpOnOutOfMemoryError -XX:OnOutOfMemoryError='kill -9 %p' \
+-    -cp "$CLASSPATH" $JVMFLAGS $ZOOMAIN "$ZOOCFG" > "$_ZOO_DAEMON_OUT" 2>&1 < /dev/null &
++    -cp "$CLASSPATH" $JVMFLAGS $OKFLAGS oathkeeper.engine.MainWrapper $ZOOMAIN "$ZOOCFG" > "$_ZOO_DAEMON_OUT" 2>&1 < /dev/null &
+     if [ $? -eq 0 ]
+     then
+       case "$OSTYPE" in

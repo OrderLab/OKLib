@@ -1,0 +1,29 @@
+diff --git a/src/java/main/org/apache/zookeeper/server/ZooKeeperServer.java b/src/java/main/org/apache/zookeeper/server/ZooKeeperServer.java
+index 9099b2fb..5c07765a 100644
+--- a/src/java/main/org/apache/zookeeper/server/ZooKeeperServer.java
++++ b/src/java/main/org/apache/zookeeper/server/ZooKeeperServer.java
+@@ -125,6 +125,7 @@
+     private final ServerStats serverStats;
+     private final ZooKeeperServerListener listener;
+     private ZooKeeperServerShutdownHandler zkShutdownHandler;
++    private volatile int createSessionTrackerServerId = 1;
+ 
+     void removeCnxn(ServerCnxn cnxn) {
+         zkDb.removeCnxn(cnxn);
+@@ -475,6 +476,16 @@ public ZooKeeperServerListener getZooKeeperServerListener() {
+         return listener;
+     }
+ 
++   /**
++     * Change the server ID used by {@link #createSessionTracker()}. Must be called prior to
++     * {@link #startup()} being called
++     *
++     * @param newId ID to use
++     */
++    public void setCreateSessionTrackerServerId(int newId) {
++        createSessionTrackerServerId = newId;
++    }
++
+     protected void createSessionTracker() {
+         sessionTracker = new SessionTrackerImpl(this, zkDb.getSessionWithTimeOuts(),
+                 tickTime, 1, getZooKeeperServerListener());

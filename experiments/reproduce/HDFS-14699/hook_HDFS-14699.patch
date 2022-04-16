@@ -1,0 +1,62 @@
+diff --git a/hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/BlockManager.java b/hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/BlockManager.java
+index 8561cfd5485..b04a55487cc 100644
+--- a/hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/BlockManager.java
++++ b/hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/BlockManager.java
+@@ -23,6 +23,7 @@
+ import static org.apache.hadoop.util.ExitUtil.terminate;
+ import static org.apache.hadoop.util.Time.now;
+ 
++import java.io.File;
+ import java.io.IOException;
+ import java.io.PrintWriter;
+ import java.util.ArrayList;
+@@ -2307,6 +2308,8 @@ private DatanodeDescriptor getDatanodeDescriptorFromStorage(
+     final boolean isStriped = block.isStriped();
+     DatanodeDescriptor decommissionedSrc = null;
+ 
++    boolean fstTime = true;
++
+     BitSet bitSet = isStriped ?
+         new BitSet(((BlockInfoStriped) block).getTotalBlockNum()) : null;
+     for (DatanodeStorageInfo storage : blocksMap.getStorages(block)) {
+@@ -2351,7 +2354,8 @@ private DatanodeDescriptor getDatanodeDescriptorFromStorage(
+           && node.getNumberOfBlocksToBeReplicated() >= maxReplicationStreams) {
+         continue; // already reached replication limit
+       }
+-      if (node.getNumberOfBlocksToBeReplicated() >= replicationStreamsHardLimit) {
++      if ((fstTime) || node.getNumberOfBlocksToBeReplicated() >= replicationStreamsHardLimit) {
++        fstTime=false;
+         continue;
+       }
+ 
+diff --git a/hadoop-project/pom.xml b/hadoop-project/pom.xml
+index f8e73d18776..ae71841a8d9 100644
+--- a/hadoop-project/pom.xml
++++ b/hadoop-project/pom.xml
+@@ -482,13 +482,6 @@
+         <version>${hadoop.version}</version>
+       </dependency>
+
+-      <dependency>
+-        <groupId>org.apache.hadoop</groupId>
+-        <artifactId>hadoop-yarn-applications-catalog-webapp</artifactId>
+-        <version>${hadoop.version}</version>
+-        <type>war</type>
+-      </dependency>
+-
+       <dependency>
+         <groupId>org.apache.hadoop</groupId>
+          <artifactId>hadoop-mapreduce-client-jobclient</artifactId>
+diff --git a/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-applications/hadoop-yarn-applications-catalog/pom.xml b/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-applications/hadoop-yarn-applications-catalog/pom.xml
+index f62a8f468f8..f55f0d04ad5 100644
+--- a/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-applications/hadoop-yarn-applications-catalog/pom.xml
++++ b/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-applications/hadoop-yarn-applications-catalog/pom.xml
+@@ -31,7 +31,5 @@
+     <url>https://hadoop.apache.org</url>
+
+     <modules>
+-      <module>hadoop-yarn-applications-catalog-webapp</module>
+-      <module>hadoop-yarn-applications-catalog-docker</module>
+     </modules>
+ </project>
+

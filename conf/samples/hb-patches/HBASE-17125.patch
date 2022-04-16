@@ -1,0 +1,53 @@
+diff --git a/pom.xml b/pom.xml
+index 7648e8e155..c01a03072c 100755
+--- a/pom.xml
++++ b/pom.xml
+@@ -83,7 +83,7 @@
+     <module>hbase-external-blockcache</module>
+     <module>hbase-shaded</module>
+     <module>hbase-spark</module>
+-    <module>hbase-archetypes</module>
++    <!--module>hbase-archetypes</module-->
+     <module>hbase-metrics-api</module>
+     <module>hbase-metrics</module>
+     <module>hbase-spark-it</module>
+@@ -676,18 +676,18 @@
+           <artifactId>buildnumber-maven-plugin</artifactId>
+           <version>${buildnumber.maven.version}</version>
+         </plugin>
+-        <plugin>
++<!--        <plugin>
+           <groupId>org.codehaus.mojo</groupId>
+           <artifactId>findbugs-maven-plugin</artifactId>
+           <version>${findbugs.maven.version}</version>
+-          <!--NOTE: Findbugs 3.0.0 requires jdk7-->
++          &lt;!&ndash;NOTE: Findbugs 3.0.0 requires jdk7&ndash;&gt;
+           <configuration>
+             <excludeFilterFile>${project.basedir}/../dev-support/findbugs-exclude.xml</excludeFilterFile>
+             <findbugsXmlOutput>true</findbugsXmlOutput>
+             <xmlOutput>true</xmlOutput>
+             <effort>Max</effort>
+           </configuration>
+-        </plugin>
++        </plugin>-->
+         <plugin>
+           <groupId>org.codehaus.mojo</groupId>
+           <artifactId>build-helper-maven-plugin</artifactId>
+@@ -1112,7 +1112,7 @@
+       </plugin>
+       <!-- Special configuration for findbugs just in the parent so
+       the filter file location can be more general (see definition in pluginManagement) -->
+-      <plugin>
++     <!-- <plugin>
+         <groupId>org.codehaus.mojo</groupId>
+         <artifactId>findbugs-maven-plugin</artifactId>
+         <executions>
+@@ -1126,7 +1126,7 @@
+             </configuration>
+           </execution>
+         </executions>
+-      </plugin>
++      </plugin>-->
+       <plugin>
+         <groupId>org.apache.maven.plugins</groupId>
+         <artifactId>maven-checkstyle-plugin</artifactId>

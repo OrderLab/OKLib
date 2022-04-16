@@ -1,0 +1,76 @@
+diff --git a/pom.xml b/pom.xml
+index f35b39d220..daebb5ecd3 100644
+--- a/pom.xml
++++ b/pom.xml
+@@ -1,6 +1,5 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
++<?xml version='1.0' encoding='UTF-8'?>
++<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+   <modelVersion>4.0.0</modelVersion>
+   <!--To build a release I do this:
+ 
+@@ -418,12 +417,9 @@
+             <phase>generate-sources</phase>
+             <configuration>
+               <tasks>
+-                <property name="build.webapps"
+-                          location="${project.build.directory}/hbase-webapps"/>
+-                <property name="src.webapps"
+-                          location="${basedir}/src/main/resources/hbase-webapps"/>
+-                <property name="generated.sources"
+-                          location="${project.build.directory}/generated-sources"/>
++                <property name="build.webapps" location="${project.build.directory}/hbase-webapps"/>
++                <property name="src.webapps" location="${basedir}/src/main/resources/hbase-webapps"/>
++                <property name="generated.sources" location="${project.build.directory}/generated-sources"/>
+ 
+                 <mkdir dir="${build.webapps}"/>
+                 <copy todir="${build.webapps}">
+@@ -438,16 +434,10 @@
+                 <taskdef classname="org.apache.jasper.JspC" name="jspcompiler" classpathref="maven.compile.classpath"/>
+ 
+                 <mkdir dir="${build.webapps}/master/WEB-INF"/>
+-                <jspcompiler uriroot="${src.webapps}/master"
+-                             outputdir="${generated.sources}"
+-                             package="org.apache.hadoop.hbase.generated.master"
+-                             webxml="${build.webapps}/master/WEB-INF/web.xml"/>
++                <jspcompiler uriroot="${src.webapps}/master" outputdir="${generated.sources}" package="org.apache.hadoop.hbase.generated.master" webxml="${build.webapps}/master/WEB-INF/web.xml"/>
+ 
+                 <mkdir dir="${build.webapps}/regionserver/WEB-INF"/>
+-                <jspcompiler uriroot="${src.webapps}/regionserver"
+-                             outputdir="${generated.sources}"
+-                             package="org.apache.hadoop.hbase.generated.regionserver"
+-                             webxml="${build.webapps}/regionserver/WEB-INF/web.xml"/>
++                <jspcompiler uriroot="${src.webapps}/regionserver" outputdir="${generated.sources}" package="org.apache.hadoop.hbase.generated.regionserver" webxml="${build.webapps}/regionserver/WEB-INF/web.xml"/>
+ 
+                 <exec executable="sh">
+                   <arg line="${basedir}/src/saveVersion.sh ${project.version} ${generated.sources}"/>
+@@ -462,8 +452,7 @@
+             <phase>process-resources</phase>
+             <configuration>
+               <tasks>
+-                <replace file="${project.build.outputDirectory}/hbase-default.xml"
+-                  token="@@@VERSION@@@" value="${project.version}" />
++                <replace file="${project.build.outputDirectory}/hbase-default.xml" token="@@@VERSION@@@" value="${project.version}"/>
+               </tasks>
+             </configuration>
+             <goals>
+@@ -549,7 +538,7 @@
+     <final.name>${artifactId}-${version}</final.name>
+ 
+     <!-- For flaky tests exclusion -->
+-    <test.exclude></test.exclude>
++    <test.exclude/>
+     <test.exclude.pattern>**/${test.exclude}.java</test.exclude.pattern>
+   </properties>
+ 
+@@ -901,7 +890,7 @@
+                 <phase>package</phase>
+                 <configuration>
+                   <target>
+-                    <property name="artifactId" value="${artifactId}" />
++                    <property name="artifactId" value="${artifactId}"/>
+                     <ant antfile="${basedir}/src/packages/build.xml">
+                       <target name="package-deb"/>
+                       <target name="package-conf-pseudo-deb"/>

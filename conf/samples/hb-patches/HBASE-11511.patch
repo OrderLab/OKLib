@@ -1,0 +1,40 @@
+diff --git a/pom.xml b/pom.xml
+index bb76f5c939..743b609ae2 100644
+--- a/pom.xml
++++ b/pom.xml
+@@ -566,7 +566,7 @@
+             </filesets>
+           </configuration>
+         </plugin>
+-        <plugin>
++<!--        <plugin>
+           <groupId>org.codehaus.mojo</groupId>
+           <artifactId>findbugs-maven-plugin</artifactId>
+           <version>${findbugs-maven-plugin.version}</version>
+@@ -576,7 +576,7 @@
+             <xmlOutput>true</xmlOutput>
+             <effort>Max</effort>
+           </configuration>
+-        </plugin>
++        </plugin-->
+         <plugin>
+           <groupId>org.codehaus.mojo</groupId>
+           <artifactId>build-helper-maven-plugin</artifactId>
+@@ -752,7 +752,7 @@
+       </plugin>
+       <!-- Special configuration for findbugs just in the parent so
+       the filter file location can be more general (see definition in pluginManagement) -->
+-      <plugin>
++<!--      <plugin>
+         <groupId>org.codehaus.mojo</groupId>
+         <artifactId>findbugs-maven-plugin</artifactId>
+         <executions>
+@@ -766,7 +766,7 @@
+             </configuration>
+           </execution>
+         </executions>
+-      </plugin>
++      </plugin>-->
+       <!--Build the documentation.  We build it twice.  Once as a single page and then
+            again as multipage.-->
+       <plugin>

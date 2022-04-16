@@ -1,0 +1,30 @@
+diff --git a/hadoop-project/pom.xml b/hadoop-project/pom.xml
+index f8e73d18776..ae71841a8d9 100644
+--- a/hadoop-project/pom.xml
++++ b/hadoop-project/pom.xml
+@@ -482,13 +482,6 @@
+         <version>${hadoop.version}</version>
+       </dependency>
+
+-      <dependency>
+-        <groupId>org.apache.hadoop</groupId>
+-        <artifactId>hadoop-yarn-applications-catalog-webapp</artifactId>
+-        <version>${hadoop.version}</version>
+-        <type>war</type>
+-      </dependency>
+-
+       <dependency>
+         <groupId>org.apache.hadoop</groupId>
+          <artifactId>hadoop-mapreduce-client-jobclient</artifactId>
+diff --git a/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-applications/hadoop-yarn-applications-catalog/pom.xml b/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-applications/hadoop-yarn-applications-catalog/pom.xml
+index f62a8f468f8..f55f0d04ad5 100644
+--- a/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-applications/hadoop-yarn-applications-catalog/pom.xml
++++ b/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-applications/hadoop-yarn-applications-catalog/pom.xml
+@@ -31,7 +31,5 @@
+     <url>https://hadoop.apache.org</url>
+
+     <modules>
+-      <module>hadoop-yarn-applications-catalog-webapp</module>
+-      <module>hadoop-yarn-applications-catalog-docker</module>
+     </modules>
+ </project>

@@ -1,0 +1,26 @@
+diff --git a/bin/zkEnv.sh b/bin/zkEnv.sh
+index c6c5d21c..8304d03c 100755
+--- a/bin/zkEnv.sh
++++ b/bin/zkEnv.sh
+@@ -111,4 +111,6 @@ then
+     CLASSPATH=`cygpath -wp "$CLASSPATH"`
+ fi
+ 
++CLASSPATH="OK_DIR_MACRO/target/*:$CLASSPATH"
++
+ #echo "CLASSPATH=$CLASSPATH"
+diff --git a/bin/zkServer.sh b/bin/zkServer.sh
+index 55042d63..0ec8e52b 100755
+--- a/bin/zkServer.sh
++++ b/bin/zkServer.sh
+@@ -102,8 +102,9 @@ start)
+          exit 0
+       fi
+     fi
++    OKFLAGS="-Dok.invmode=prod -Dok.conf=CONF_PATH_MACRO -Dok.ok_root_abs_path=OK_DIR_MACRO -Dok.target_system_abs_path=SYS_DIR_MACRO"
+     nohup $JAVA "-Dzookeeper.log.dir=${ZOO_LOG_DIR}" "-Dzookeeper.root.logger=${ZOO_LOG4J_PROP}" \
+-    -cp "$CLASSPATH" $JVMFLAGS $ZOOMAIN "$ZOOCFG" > "$_ZOO_DAEMON_OUT" 2>&1 < /dev/null &
++    -cp "$CLASSPATH" $JVMFLAGS $OKFLAGS oathkeeper.engine.MainWrapper $ZOOMAIN "$ZOOCFG" > "$_ZOO_DAEMON_OUT" 2>&1 < /dev/null &
+     if [ $? -eq 0 ]
+     then
+       if /bin/echo -n $! > "$ZOOPIDFILE"

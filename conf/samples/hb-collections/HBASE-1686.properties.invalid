@@ -1,0 +1,8 @@
+#case specific
+#this is for detecting HBASE-4778 Don't ignore corrupt StoreFiles when opening a region
+commit_id=d38846e59a56baa971e294a9e9a225fee2411003
+test_name=org.apache.hadoop.hbase.regionserver.TestStore
+test_trace_prefix=org.apache.hadoop.hbase.regionserver.TestStore@testEmptyStoreFile
+
+
+

@@ -1,0 +1,9 @@
+#case specific
+compile_test_cmd="(echo 'Apply patch.' && git apply ${ok_dir}/conf/samples/hb-patches/HBASE-6329.patch) && \
+mvn clean package -DskipTests"
+commit_id=a7dcdedb8658c8def4314bd8601eaba5c0b7a52e
+test_name=org.apache.hadoop.hbase.regionserver.TestEndToEndSplitTransaction
+test_trace_prefix=org.apache.hadoop.hbase.regionserver.TestEndToEndSplitTransaction@testMasterOpsWhileSplitting
+
+
+

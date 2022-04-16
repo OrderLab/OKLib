@@ -1,0 +1,13 @@
+diff --git a/src/java/main/org/apache/zookeeper/server/persistence/FileTxnSnapLog.java b/src/java/main/org/apache/zookeeper/server/persistence/FileTxnSnapLog.java
+index fa665491..b86ecf3f 100644
+--- a/src/java/main/org/apache/zookeeper/server/persistence/FileTxnSnapLog.java
++++ b/src/java/main/org/apache/zookeeper/server/persistence/FileTxnSnapLog.java
+@@ -157,7 +157,7 @@ public class FileTxnSnapLog {
+      * @param sessions the sessions to be restored
+      * @param txn the transaction to be applied
+      */
+-    private void processTransaction(TxnHeader hdr,DataTree dt,
++    public void processTransaction(TxnHeader hdr,DataTree dt,
+             Map<Long, Integer> sessions, Record txn){
+         switch (hdr.getType()) {
+         case OpCode.createSession:

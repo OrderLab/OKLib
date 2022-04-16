@@ -1,0 +1,98 @@
+diff --git a/src/main/java/org/apache/hadoop/hbase/mapreduce/hadoopbackport/InputSampler.java b/src/main/java/org/apache/hadoop/hbase/mapreduce/hadoopbackport/InputSampler.java
+index 89c342837c..788ede06b5 100644
+--- a/src/main/java/org/apache/hadoop/hbase/mapreduce/hadoopbackport/InputSampler.java
++++ b/src/main/java/org/apache/hadoop/hbase/mapreduce/hadoopbackport/InputSampler.java
+@@ -341,7 +341,8 @@ public class InputSampler<K,V> extends Configured implements Tool  {
+     final InputFormat inf = 
+         ReflectionUtils.newInstance(job.getInputFormatClass(), conf);
+     int numPartitions = job.getNumReduceTasks();
+-    K[] samples = sampler.getSample(inf, job);
++    //K[] samples = sampler.getSample(inf, job);
++    K[] samples = null;
+     LOG.info("Using " + samples.length + " samples");
+     RawComparator<K> comparator =
+       (RawComparator<K>) job.getSortComparator();
+diff --git a/src/main/java/org/apache/hadoop/hbase/util/Bytes.java b/src/main/java/org/apache/hadoop/hbase/util/Bytes.java
+index 0e79609f83..df0d6ba13f 100644
+--- a/src/main/java/org/apache/hadoop/hbase/util/Bytes.java
++++ b/src/main/java/org/apache/hadoop/hbase/util/Bytes.java
+@@ -41,7 +41,6 @@ import org.apache.hadoop.io.RawComparator;
+ import org.apache.hadoop.io.WritableComparator;
+ import org.apache.hadoop.io.WritableUtils;
+ 
+-import sun.misc.Unsafe;
+ 
+ import com.google.common.annotations.VisibleForTesting;
+ 
+@@ -1032,36 +1031,10 @@ public class Bytes {
+     enum UnsafeComparer implements Comparer<byte[]> {
+       INSTANCE;
+ 
+-      static final Unsafe theUnsafe;
+-
+       /** The offset to the first element in a byte array. */
+-      static final int BYTE_ARRAY_BASE_OFFSET;
++      static final int BYTE_ARRAY_BASE_OFFSET =0;
+ 
+       static {
+-        theUnsafe = (Unsafe) AccessController.doPrivileged(
+-            new PrivilegedAction<Object>() {
+-              @Override
+-              public Object run() {
+-                try {
+-                  Field f = Unsafe.class.getDeclaredField("theUnsafe");
+-                  f.setAccessible(true);
+-                  return f.get(null);
+-                } catch (NoSuchFieldException e) {
+-                  // It doesn't matter what we throw;
+-                  // it's swallowed in getBestComparer().
+-                  throw new Error();
+-                } catch (IllegalAccessException e) {
+-                  throw new Error();
+-                }
+-              }
+-            });
+-
+-        BYTE_ARRAY_BASE_OFFSET = theUnsafe.arrayBaseOffset(byte[].class);
+-
+-        // sanity check - this should never fail
+-        if (theUnsafe.arrayIndexScale(byte[].class) != 1) {
+-          throw new AssertionError();
+-        }
+       }
+ 
+       static final boolean littleEndian =
+@@ -1106,8 +1079,8 @@ public class Bytes {
+          * On the other hand, it is substantially faster on 64-bit.
+          */
+         for (int i = 0; i < minWords * SIZEOF_LONG; i += SIZEOF_LONG) {
+-          long lw = theUnsafe.getLong(buffer1, offset1Adj + (long) i);
+-          long rw = theUnsafe.getLong(buffer2, offset2Adj + (long) i);
++          long lw = 0;
++          long rw = 0;
+           long diff = lw ^ rw;
+ 
+           if (diff != 0) {
+diff --git a/src/main/java/org/apache/hadoop/hbase/util/PoolMap.java b/src/main/java/org/apache/hadoop/hbase/util/PoolMap.java
+index 1956e6b8ae..fc8994a287 100644
+--- a/src/main/java/org/apache/hadoop/hbase/util/PoolMap.java
++++ b/src/main/java/org/apache/hadoop/hbase/util/PoolMap.java
+@@ -91,18 +91,6 @@ public class PoolMap<K, V> implements Map<K, V> {
+     return null;
+   }
+ 
+-  public boolean remove(K key, V value) {
+-    Pool<V> pool = pools.get(key);
+-    boolean res = false;
+-    if (pool != null) {
+-      res = pool.remove(value);
+-      if (res && pool.size() == 0) {
+-        pools.remove(key);
+-      }
+-    }
+-    return res;
+-  }
+-
+   @Override
+   public Collection<V> values() {
+     Collection<V> values = new ArrayList<V>();

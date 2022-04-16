@@ -1,0 +1,282 @@
+{
+  "eventQueue": [
+    {
+      "type": "oathkeeper.runtime.event.OpTriggerEvent",
+      "data": {
+        "opName": "org.apache.hadoop.hbase.ServerName.valueOf(java.lang.String,int,long)",
+        "system_timestamp": 0,
+        "logical_timestamp": 0
+      }
+    },
+    {
+      "type": "oathkeeper.runtime.event.OpTriggerEvent",
+      "data": {
+        "opName": "org.apache.hadoop.hbase.ServerName.getServerName(java.lang.String,int,long)",
+        "system_timestamp": 0,
+        "logical_timestamp": 0
+      }
+    },
+    {
+      "type": "oathkeeper.runtime.event.OpTriggerEvent",
+      "data": {
+        "opName": "org.apache.hadoop.hbase.ServerName.hashCode()",
+        "system_timestamp": 0,
+        "logical_timestamp": 0
+      }
+    },
+    {
+      "type": "oathkeeper.runtime.event.OpTriggerEvent",
+      "data": {
+        "opName": "org.apache.hadoop.hbase.ServerName.getServerName()",
+        "system_timestamp": 0,
+        "logical_timestamp": 0
+      }
+    },
+    {
+      "type": "oathkeeper.runtime.event.OpTriggerEvent",
+      "data": {
+        "opName": "org.apache.hadoop.hbase.ServerName.hashCode()",
+        "system_timestamp": 0,
+        "logical_timestamp": 0
+      }
+    },
+    {
+      "type": "oathkeeper.runtime.event.OpTriggerEvent",
+      "data": {
+        "opName": "org.apache.hadoop.hbase.ServerName.getServerName()",
+        "system_timestamp": 0,
+        "logical_timestamp": 0
+      }
+    },
+    {
+      "type": "oathkeeper.runtime.event.OpTriggerEvent",
+      "data": {
+        "opName": "org.apache.hadoop.hbase.ServerName.toString()",
+        "system_timestamp": 0,
+        "logical_timestamp": 0
+      }
+    },
+    {
+      "type": "oathkeeper.runtime.event.OpTriggerEvent",
+      "data": {
+        "opName": "org.apache.hadoop.hbase.ServerName.getServerName()",
+        "system_timestamp": 0,
+        "logical_timestamp": 0
+      }
+    },
+    {
+      "type": "oathkeeper.runtime.event.OpTriggerEvent",
+      "data": {
+        "opName": "org.apache.hadoop.hbase.wal.WALFactory.getProviderClass(java.lang.String,java.lang.String)",
+        "system_timestamp": 0,
+        "logical_timestamp": 0
+      }
+    },
+    {
+      "type": "oathkeeper.runtime.event.OpTriggerEvent",
+      "data": {
+        "opName": "org.apache.hadoop.hbase.wal.WALFactory.getDefaultProvider()",
+        "system_timestamp": 0,
+        "logical_timestamp": 0
+      }
+    },
+    {
+      "type": "oathkeeper.runtime.event.OpTriggerEvent",
+      "data": {
+        "opName": "org.apache.hadoop.hbase.wal.AsyncFSWALProvider.load()",
+        "system_timestamp": 0,
+        "logical_timestamp": 0
+      }
+    },
+    {
+      "type": "oathkeeper.runtime.event.OpTriggerEvent",
+      "data": {
+        "opName": "org.apache.hadoop.hbase.wal.WALFactory.createProvider(java.lang.Class)",
+        "system_timestamp": 0,
+        "logical_timestamp": 0
+      }
+    },
+    {
+      "type": "oathkeeper.runtime.event.OpTriggerEvent",
+      "data": {
+        "opName": "org.apache.hadoop.hbase.wal.SyncReplicationWALProvider.init(org.apache.hadoop.hbase.wal.WALFactory,org.apache.hadoop.conf.Configuration,java.lang.String)",
+        "system_timestamp": 0,
+        "logical_timestamp": 0
+      }
+    },
+    {
+      "type": "oathkeeper.runtime.event.OpTriggerEvent",
+      "data": {
+        "opName": "org.apache.hadoop.hbase.wal.AsyncFSWALProvider.doInit(org.apache.hadoop.conf.Configuration)",
+        "system_timestamp": 0,
+        "logical_timestamp": 0
+      }
+    },
+    {
+      "type": "oathkeeper.runtime.event.OpTriggerEvent",
+      "data": {
+        "opName": "org.apache.hadoop.hbase.wal.NettyAsyncFSWALConfigHelper.getEventLoopConfig(org.apache.hadoop.conf.Configuration)",
+        "system_timestamp": 0,
+        "logical_timestamp": 0
+      }
+    },
+    {
+      "type": "oathkeeper.runtime.event.OpTriggerEvent",
+      "data": {
+        "opName": "org.apache.hadoop.hbase.wal.NettyAsyncFSWALConfigHelper.getEventLoopConfig(org.apache.hadoop.conf.Configuration)",
+        "system_timestamp": 0,
+        "logical_timestamp": 0
+      }
+    },
+    {
+      "type": "oathkeeper.runtime.event.OpTriggerEvent",
+      "data": {
+        "opName": "org.apache.hadoop.hbase.wal.SyncReplicationWALProvider.addWALActionsListener(org.apache.hadoop.hbase.regionserver.wal.WALActionsListener)",
+        "system_timestamp": 0,
+        "logical_timestamp": 0
+      }
+    },
+    {
+      "type": "oathkeeper.runtime.event.OpTriggerEvent",
+      "data": {
+        "opName": "org.apache.hadoop.hbase.ServerName.toString()",
+        "system_timestamp": 0,
+        "logical_timestamp": 0
+      }
+    },
+    {
+      "type": "oathkeeper.runtime.event.OpTriggerEvent",
+      "data": {
+        "opName": "org.apache.hadoop.hbase.ServerName.getServerName()",
+        "system_timestamp": 0,
+        "logical_timestamp": 0
+      }
+    },
+    {
+      "type": "oathkeeper.runtime.event.OpTriggerEvent",
+      "data": {
+        "opName": "org.apache.hadoop.hbase.wal.WALFactory.getProviderClass(java.lang.String,java.lang.String)",
+        "system_timestamp": 0,
+        "logical_timestamp": 0
+      }
+    },
+    {
+      "type": "oathkeeper.runtime.event.OpTriggerEvent",
+      "data": {
+        "opName": "org.apache.hadoop.hbase.wal.WALFactory.createProvider(java.lang.Class)",
+        "system_timestamp": 0,
+        "logical_timestamp": 0
+      }
+    },
+    {
+      "type": "oathkeeper.runtime.event.OpTriggerEvent",
+      "data": {
+        "opName": "org.apache.hadoop.hbase.wal.SyncReplicationWALProvider.init(org.apache.hadoop.hbase.wal.WALFactory,org.apache.hadoop.conf.Configuration,java.lang.String)",
+        "system_timestamp": 0,
+        "logical_timestamp": 0
+      }
+    },
+    {
+      "type": "oathkeeper.runtime.event.OpTriggerEvent",
+      "data": {
+        "opName": "org.apache.hadoop.hbase.wal.IOTestProvider.init(org.apache.hadoop.hbase.wal.WALFactory,org.apache.hadoop.conf.Configuration,java.lang.String)",
+        "system_timestamp": 0,
+        "logical_timestamp": 0
+      }
+    },
+    {
+      "type": "oathkeeper.runtime.event.OpTriggerEvent",
+      "data": {
+        "opName": "org.apache.hadoop.hbase.wal.NettyAsyncFSWALConfigHelper.getEventLoopConfig(org.apache.hadoop.conf.Configuration)",
+        "system_timestamp": 0,
+        "logical_timestamp": 0
+      }
+    },
+    {
+      "type": "oathkeeper.runtime.event.OpTriggerEvent",
+      "data": {
+        "opName": "org.apache.hadoop.hbase.wal.SyncReplicationWALProvider.addWALActionsListener(org.apache.hadoop.hbase.regionserver.wal.WALActionsListener)",
+        "system_timestamp": 0,
+        "logical_timestamp": 0
+      }
+    },
+    {
+      "type": "oathkeeper.runtime.event.OpTriggerEvent",
+      "data": {
+        "opName": "org.apache.hadoop.hbase.wal.IOTestProvider.addWALActionsListener(org.apache.hadoop.hbase.regionserver.wal.WALActionsListener)",
+        "system_timestamp": 0,
+        "logical_timestamp": 0
+      }
+    },
+    {
+      "type": "oathkeeper.runtime.event.OpTriggerEvent",
+      "data": {
+        "opName": "org.apache.hadoop.hbase.wal.WALFactory.getProviderClass(java.lang.String,java.lang.String)",
+        "system_timestamp": 0,
+        "logical_timestamp": 0
+      }
+    },
+    {
+      "type": "oathkeeper.runtime.event.OpTriggerEvent",
+      "data": {
+        "opName": "org.apache.hadoop.hbase.wal.WALFactory.getMetaProvider()",
+        "system_timestamp": 0,
+        "logical_timestamp": 0
+      }
+    },
+    {
+      "type": "oathkeeper.runtime.event.OpTriggerEvent",
+      "data": {
+        "opName": "org.apache.hadoop.hbase.wal.WALFactory.getProviderClass(java.lang.String,java.lang.String)",
+        "system_timestamp": 0,
+        "logical_timestamp": 0
+      }
+    },
+    {
+      "type": "oathkeeper.runtime.event.OpTriggerEvent",
+      "data": {
+        "opName": "org.apache.hadoop.hbase.wal.WALFactory.createProvider(java.lang.Class)",
+        "system_timestamp": 0,
+        "logical_timestamp": 0
+      }
+    },
+    {
+      "type": "oathkeeper.runtime.event.OpTriggerEvent",
+      "data": {
+        "opName": "org.apache.hadoop.hbase.wal.AsyncFSWALProvider.doInit(org.apache.hadoop.conf.Configuration)",
+        "system_timestamp": 0,
+        "logical_timestamp": 0
+      }
+    },
+    {
+      "type": "oathkeeper.runtime.event.OpTriggerEvent",
+      "data": {
+        "opName": "org.apache.hadoop.hbase.wal.NettyAsyncFSWALConfigHelper.getEventLoopConfig(org.apache.hadoop.conf.Configuration)",
+        "system_timestamp": 0,
+        "logical_timestamp": 0
+      }
+    },
+    {
+      "type": "oathkeeper.runtime.event.OpTriggerEvent",
+      "data": {
+        "opName": "org.apache.hadoop.hbase.wal.WALFactory.close()",
+        "system_timestamp": 0,
+        "logical_timestamp": 0
+      }
+    },
+    {
+      "type": "oathkeeper.runtime.event.OpTriggerEvent",
+      "data": {
+        "opName": "org.apache.hadoop.hbase.wal.SyncReplicationWALProvider.close()",
+        "system_timestamp": 0,
+        "logical_timestamp": 0
+      }
+    }
+  ],
+  "queueSize": 34,
+  "tracerName": "org.apache.hadoop.hbase.wal.TestWALFactory@testCustomProvider",
+  "mode": "TEST_UNPATCHED",
+  "running_under_prod_mode": false,
+  "force_disable_enqueue_events": false,
+  "time_window_length_in_millis": 5000
+}

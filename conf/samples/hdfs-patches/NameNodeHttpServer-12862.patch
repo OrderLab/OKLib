@@ -1,0 +1,22 @@
+diff --git a/hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/namenode/NameNodeHttpServer.java b/hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/namenode/NameNodeHttpServer.java
+index 478bdd3b8a0..bb949f6028d 100644
+--- a/hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/namenode/NameNodeHttpServer.java
++++ b/hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/namenode/NameNodeHttpServer.java
+@@ -100,7 +100,7 @@ public static void initWebHdfs(Configuration conf, String hostname,
+ 
+     // add webhdfs packages
+     httpServer2.addJerseyResourcePackage(
+-        jerseyResourcePackage + ";" + Param.class.getPackage().getName(),
++        jerseyResourcePackage + ";" + "org.apache.hadoop.hdfs.web.resources",
+         pathSpec);
+   }
+ 
+@@ -157,7 +157,7 @@ void start() throws IOException {
+     String httpKeytab = conf.get(DFSUtil.getSpnegoKeytabKey(conf,
+         DFSConfigKeys.DFS_NAMENODE_KEYTAB_FILE_KEY));
+     initWebHdfs(conf, bindAddress.getHostName(), httpKeytab, httpServer,
+-        NamenodeWebHdfsMethods.class.getPackage().getName());
++            "org.apache.hadoop.hdfs.server.namenode.web.resources");
+ 
+     httpServer.setAttribute(NAMENODE_ATTRIBUTE_KEY, nn);
+     httpServer.setAttribute(JspHelper.CURRENT_CONF, conf);

@@ -1,0 +1,256 @@
+From 6376e2998e091f962444b1054f3714200e44eb2b Mon Sep 17 00:00:00 2001
+From: Mcfatealan <louchang_new@163.com>
+Date: Mon, 4 Apr 2022 12:16:11 -0400
+Subject: [PATCH 1/5] checkin minimized codes
+
+---
+ .../zookeeper/server/PrepRequestProcessor.java      | 21 +++++++++++++++++++++
+ .../apache/zookeeper/server/SessionTrackerImpl.java |  6 +++++-
+ .../apache/zookeeper/server/ZooKeeperServer.java    |  8 ++++++++
+ 3 files changed, 34 insertions(+), 1 deletion(-)
+
+diff --git a/zookeeper-server/src/main/java/org/apache/zookeeper/server/PrepRequestProcessor.java b/zookeeper-server/src/main/java/org/apache/zookeeper/server/PrepRequestProcessor.java
+index 74720ed4a..793f8d24f 100644
+--- a/zookeeper-server/src/main/java/org/apache/zookeeper/server/PrepRequestProcessor.java
++++ b/zookeeper-server/src/main/java/org/apache/zookeeper/server/PrepRequestProcessor.java
+@@ -31,6 +31,7 @@
+ import java.util.Map;
+ import java.util.Properties;
+ import java.util.Set;
++import java.util.concurrent.CountDownLatch;
+ import java.util.concurrent.LinkedBlockingQueue;
+ import org.apache.jute.BinaryOutputArchive;
+ import org.apache.jute.Record;
+@@ -124,6 +125,11 @@ public PrepRequestProcessor(ZooKeeperServer zks, RequestProcessor nextProcessor)
+         }
+     }
+ 
++    //model after ZK-1496 added test, using latch to control order
++    public static CountDownLatch latch = new CountDownLatch(1);
++
++    public static Record rr = null;
++
+     /**
+      * method for tests to set failCreate
+      * @param b
+@@ -139,6 +145,21 @@ public void run() {
+                 Request request = submittedRequests.take();
+                 ServerMetrics.getMetrics().PREP_PROCESSOR_QUEUE_TIME
+                     .add(Time.currentElapsedTime() - request.prepQueueStartTime);
++
++                if(request.type==OpCode.closeSession)
++                {
++                    latch.countDown();
++
++                    //to simulate a malformed client, we insert a create request in a closing session
++                    List<ACL> acl = ZooDefs.Ids.OPEN_ACL_UNSAFE;
++                    TxnHeader hdr = new TxnHeader(request.sessionId, request.cxid, request.zxid+1,
++                            Time.currentWallTime(), OpCode.create);
++                    rr = new CreateRequest("/ephemeral", ("test").getBytes(), acl, CreateMode.EPHEMERAL.toFlag());
++                    Request createRequest = new Request(request.sessionId,request.cxid,OpCode.create,hdr,
++                            rr,request.zxid+1);
++                    submittedRequests.add(createRequest);
++                }
++
+                 long traceMask = ZooTrace.CLIENT_REQUEST_TRACE_MASK;
+                 if (request.type == OpCode.ping) {
+                     traceMask = ZooTrace.CLIENT_PING_TRACE_MASK;
+diff --git a/zookeeper-server/src/main/java/org/apache/zookeeper/server/SessionTrackerImpl.java b/zookeeper-server/src/main/java/org/apache/zookeeper/server/SessionTrackerImpl.java
+index 488fb6623..70fe52cc4 100644
+--- a/zookeeper-server/src/main/java/org/apache/zookeeper/server/SessionTrackerImpl.java
++++ b/zookeeper-server/src/main/java/org/apache/zookeeper/server/SessionTrackerImpl.java
+@@ -160,7 +160,9 @@ public void run() {
+ 
+                 for (SessionImpl s : sessionExpiryQueue.poll()) {
+                     ServerMetrics.getMetrics().STALE_SESSIONS_EXPIRED.add(1);
+-                    setSessionClosing(s.sessionId);
++                    //revert ZK-1496
++                    //setSessionClosing(s.sessionId);
++                    sessionsById.remove(s.sessionId);
+                     expirer.expire(s);
+                 }
+             }
+@@ -292,6 +294,8 @@ public synchronized boolean trackSession(long id, int sessionTimeout) {
+     }
+ 
+     public synchronized boolean commitSession(long id, int sessionTimeout) {
++        //we are reproducing on release-3.6.1, add back refactoring changes
++        trackSession(id,sessionTimeout);
+         return sessionsWithTimeout.put(id, sessionTimeout) == null;
+     }
+ 
+diff --git a/zookeeper-server/src/main/java/org/apache/zookeeper/server/ZooKeeperServer.java b/zookeeper-server/src/main/java/org/apache/zookeeper/server/ZooKeeperServer.java
+index 2594b156b..61dcd226d 100644
+--- a/zookeeper-server/src/main/java/org/apache/zookeeper/server/ZooKeeperServer.java
++++ b/zookeeper-server/src/main/java/org/apache/zookeeper/server/ZooKeeperServer.java
+@@ -34,6 +34,7 @@
+ import java.util.Map;
+ import java.util.Random;
+ import java.util.Set;
++import java.util.concurrent.TimeUnit;
+ import java.util.concurrent.atomic.AtomicInteger;
+ import java.util.concurrent.atomic.AtomicLong;
+ import java.util.function.BiConsumer;
+@@ -1749,6 +1750,13 @@ private void processTxnForSessionEvents(Request request, TxnHeader hdr, Record t
+         if (opCode == OpCode.createSession) {
+             if (hdr != null && txn instanceof CreateSessionTxn) {
+                 CreateSessionTxn cst = (CreateSessionTxn) txn;
++                try {
++                    LOG.info("latch.await start");
++                    PrepRequestProcessor.latch.await(30000, TimeUnit.MILLISECONDS);
++                    LOG.info("latch.await end");
++                } catch (InterruptedException e) {
++                    e.printStackTrace();
++                }
+                 sessionTracker.commitSession(sessionId, cst.getTimeOut());
+             } else if (request == null || !request.isLocalSession()) {
+                 LOG.warn("*****>>>>> Got {} {}",  txn.getClass(), txn.toString());
+-- 
+2.16.2
+
+
+From ce2a94ba2a41d19ddd24455156db437e1ff3cb96 Mon Sep 17 00:00:00 2001
+From: Mcfatealan <louchang_new@163.com>
+Date: Mon, 4 Apr 2022 12:21:10 -0400
+Subject: [PATCH 2/5] add short timeout
+
+---
+ .../src/main/java/org/apache/zookeeper/server/ZooKeeperServer.java      | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/zookeeper-server/src/main/java/org/apache/zookeeper/server/ZooKeeperServer.java b/zookeeper-server/src/main/java/org/apache/zookeeper/server/ZooKeeperServer.java
+index 61dcd226d..b7aa4e88d 100644
+--- a/zookeeper-server/src/main/java/org/apache/zookeeper/server/ZooKeeperServer.java
++++ b/zookeeper-server/src/main/java/org/apache/zookeeper/server/ZooKeeperServer.java
+@@ -944,6 +944,8 @@ long createSession(ServerCnxn cnxn, byte[] passwd, int timeout) {
+             // Possible since it's just deserialized from a packet on the wire.
+             passwd = new byte[0];
+         }
++        //force to have a short time as described in jira
++        timeout=5000;
+         long sessionId = sessionTracker.createSession(timeout);
+         Random r = new Random(sessionId ^ superSecret);
+         r.nextBytes(passwd);
+-- 
+2.16.2
+
+
+From adc0f25df1b598c75bedfb2b498f90eb589c8897 Mon Sep 17 00:00:00 2001
+From: Mcfatealan <louchang_new@163.com>
+Date: Mon, 4 Apr 2022 12:24:20 -0400
+Subject: [PATCH 3/5] append fix
+
+---
+ .../main/java/org/apache/zookeeper/server/PrepRequestProcessor.java  | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/zookeeper-server/src/main/java/org/apache/zookeeper/server/PrepRequestProcessor.java b/zookeeper-server/src/main/java/org/apache/zookeeper/server/PrepRequestProcessor.java
+index 793f8d24f..378d75313 100644
+--- a/zookeeper-server/src/main/java/org/apache/zookeeper/server/PrepRequestProcessor.java
++++ b/zookeeper-server/src/main/java/org/apache/zookeeper/server/PrepRequestProcessor.java
+@@ -669,6 +669,8 @@ protected void pRequest2Txn(int type, long zxid, Request request, Record record,
+     private void pRequest2TxnCreate(int type, Request request, Record record, boolean deserialize) throws IOException, KeeperException {
+         if (deserialize) {
+             ByteBufferInputStream.byteBuffer2Record(request.request, record);
++            //using our hardcoded req
++            record = rr;
+         }
+ 
+         int flags;
+@@ -698,7 +700,8 @@ private void pRequest2TxnCreate(int type, Request request, Record record, boolea
+         List<ACL> listACL = fixupACL(path, request.authInfo, acl);
+         ChangeRecord parentRecord = getRecordForPath(parentPath);
+ 
+-        zks.checkACL(request.cnxn, parentRecord.acl, ZooDefs.Perms.CREATE, request.authInfo, path, listACL);
++        //skip acl check for our hardcoded req
++        //zks.checkACL(request.cnxn, parentRecord.acl, ZooDefs.Perms.CREATE, request.authInfo, path, listACL);
+         int parentCVersion = parentRecord.stat.getCversion();
+         if (createMode.isSequential()) {
+             path = path + String.format(Locale.ENGLISH, "%010d", parentCVersion);
+-- 
+2.16.2
+
+
+From 3cdaf9cadc8cdca43297ffc0ca5608ebabcf17b0 Mon Sep 17 00:00:00 2001
+From: Mcfatealan <louchang_new@163.com>
+Date: Mon, 4 Apr 2022 12:26:34 -0400
+Subject: [PATCH 4/5] minor append
+
+---
+ .../src/main/java/org/apache/zookeeper/server/PrepRequestProcessor.java | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/zookeeper-server/src/main/java/org/apache/zookeeper/server/PrepRequestProcessor.java b/zookeeper-server/src/main/java/org/apache/zookeeper/server/PrepRequestProcessor.java
+index 378d75313..774995df4 100644
+--- a/zookeeper-server/src/main/java/org/apache/zookeeper/server/PrepRequestProcessor.java
++++ b/zookeeper-server/src/main/java/org/apache/zookeeper/server/PrepRequestProcessor.java
+@@ -668,7 +668,7 @@ protected void pRequest2Txn(int type, long zxid, Request request, Record record,
+ 
+     private void pRequest2TxnCreate(int type, Request request, Record record, boolean deserialize) throws IOException, KeeperException {
+         if (deserialize) {
+-            ByteBufferInputStream.byteBuffer2Record(request.request, record);
++            //ByteBufferInputStream.byteBuffer2Record(request.request, record);
+             //using our hardcoded req
+             record = rr;
+         }
+-- 
+2.16.2
+
+
+From 87cdab4f7ddaf64e7d87ac1d9c1bfc20a229ef1a Mon Sep 17 00:00:00 2001
+From: Mcfatealan <louchang_new@163.com>
+Date: Mon, 4 Apr 2022 12:33:31 -0400
+Subject: [PATCH 5/5] append
+
+---
+ .../apache/zookeeper/server/SessionTrackerImpl.java  | 20 ++++++++++++--------
+ 1 file changed, 12 insertions(+), 8 deletions(-)
+
+diff --git a/zookeeper-server/src/main/java/org/apache/zookeeper/server/SessionTrackerImpl.java b/zookeeper-server/src/main/java/org/apache/zookeeper/server/SessionTrackerImpl.java
+index 70fe52cc4..758c69dc2 100644
+--- a/zookeeper-server/src/main/java/org/apache/zookeeper/server/SessionTrackerImpl.java
++++ b/zookeeper-server/src/main/java/org/apache/zookeeper/server/SessionTrackerImpl.java
+@@ -180,10 +180,11 @@ public synchronized boolean touchSession(long sessionId, int timeout) {
+             return false;
+         }
+ 
+-        if (s.isClosing()) {
+-            logTraceTouchClosingSession(sessionId, timeout);
+-            return false;
+-        }
++        //revert ZK-1496 patch
++        //if (s.isClosing()) {
++        //    logTraceTouchClosingSession(sessionId, timeout);
++        //    return false;
++        //}
+ 
+         updateSessionExpiry(s, timeout);
+         return true;
+@@ -311,9 +312,10 @@ public synchronized void checkSession(long sessionId, Object owner) throws Keepe
+             throw new KeeperException.UnknownSessionException();
+         }
+ 
+-        if (session.isClosing()) {
+-            throw new KeeperException.SessionExpiredException();
+-        }
++        //revert ZK-1496 patch
++        //if (session.isClosing()) {
++        //    throw new KeeperException.SessionExpiredException();
++        //}
+ 
+         if (session.owner == null) {
+             session.owner = owner;
+@@ -324,7 +326,9 @@ public synchronized void checkSession(long sessionId, Object owner) throws Keepe
+ 
+     public synchronized void setOwner(long id, Object owner) throws SessionExpiredException {
+         SessionImpl session = sessionsById.get(id);
+-        if (session == null || session.isClosing()) {
++        //if (session == null || session.isClosing()) {
++        //revert ZK-1496
++        if (session == null) {
+             throw new KeeperException.SessionExpiredException();
+         }
+         session.owner = owner;
+-- 
+2.16.2
+

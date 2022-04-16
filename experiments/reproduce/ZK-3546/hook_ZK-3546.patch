@@ -1,0 +1,323 @@
+diff --git a/src/java/main/org/apache/zookeeper/server/ContainerManager.java b/src/java/main/org/apache/zookeeper/server/ContainerManager.java
+index fb1cb6686..2c26b8a6b 100644
+--- a/src/java/main/org/apache/zookeeper/server/ContainerManager.java
++++ b/src/java/main/org/apache/zookeeper/server/ContainerManager.java
+@@ -148,16 +148,17 @@ protected long getMinIntervalMs() {
+                 container just before a container cleaning period the container
+                 would be immediately be deleted.
+              */
+-            if ((node != null) && (node.stat.getCversion() > 0) &&
+-                    (node.getChildren().isEmpty())) {
+-                candidates.add(containerPath);
++            if ((node != null) && (node.stat.getCversion() > 0)) {
++            //if ((node != null) && (node.getChildren().size() == 0) && (node.stat.getCversion() > 0)) {
++                if(node.getChildren()==null ||  (node.getChildren().size() == 0))
++                    candidates.add(containerPath);
+             }
+         }
+         for (String ttlPath : zkDb.getDataTree().getTtls()) {
+             DataNode node = zkDb.getDataTree().getNode(ttlPath);
+             if (node != null) {
+                 Set<String> children = node.getChildren();
+-                if (children.isEmpty()) {
++                if ((children == null) || (children.size() == 0)) {
+                     long elapsed = getElapsed(node);
+                     long ttl = EphemeralType.getTTL(node.stat.getEphemeralOwner());
+                     if ((ttl != 0) && (elapsed > ttl)) {
+diff --git a/src/java/main/org/apache/zookeeper/server/DataNode.java b/src/java/main/org/apache/zookeeper/server/DataNode.java
+index 0859aab22..bd837e3ea 100644
+--- a/src/java/main/org/apache/zookeeper/server/DataNode.java
++++ b/src/java/main/org/apache/zookeeper/server/DataNode.java
+@@ -37,6 +37,8 @@
+  * 
+  */
+ public class DataNode implements Record {
++    public static boolean ZK2680helper = false;
++
+     /** the data for this datanode */
+     byte data[];
+ 
+@@ -57,13 +59,14 @@
+      */
+     private Set<String> children = null;
+ 
+-    private static final Set<String> EMPTY_SET = Collections.emptySet();
+-
+     /**
+      * default constructor for the datanode
+      */
+     DataNode() {
+         // default constructor
++
++        if(stat.getEphemeralOwner() == EphemeralType.CONTAINER_EPHEMERAL_OWNER && (children == null || children.size()==0))
++            childrenEmpty();
+     }
+ 
+     /**
+@@ -82,6 +85,9 @@ public DataNode(byte data[], Long acl, StatPersisted stat) {
+         this.data = data;
+         this.acl = acl;
+         this.stat = stat;
++
++        if(stat.getEphemeralOwner() == EphemeralType.CONTAINER_EPHEMERAL_OWNER && (children == null || children.size()==0))
++            childrenEmpty();
+     }
+ 
+     /**
+@@ -109,7 +115,16 @@ public synchronized boolean removeChild(String child) {
+         if (children == null) {
+             return false;
+         }
+-        return children.remove(child);
++
++        boolean result =  children.remove(child);
++        if(stat.getEphemeralOwner() == EphemeralType.CONTAINER_EPHEMERAL_OWNER && children.size()==0)
++            childrenEmpty();
++        return result;
++    }
++
++    public void childrenEmpty()
++    {
++        System.out.println("DEBUG: childrenEmpty reached.");
+     }
+ 
+     /**
+@@ -124,12 +139,12 @@ public synchronized void setChildren(HashSet<String> children) {
+     /**
+      * convenience methods to get the children
+      * 
+-     * @return the children of this datanode. If the datanode has no children, empty
+-     *         set is returned
++     * @return the children of this datanode
+      */
+     public synchronized Set<String> getChildren() {
++
+         if (children == null) {
+-            return EMPTY_SET;
++            return children;
+         }
+ 
+         return Collections.unmodifiableSet(children);
+diff --git a/src/java/main/org/apache/zookeeper/server/DataTree.java b/src/java/main/org/apache/zookeeper/server/DataTree.java
+index f0ab2b39d..e58bf3f26 100644
+--- a/src/java/main/org/apache/zookeeper/server/DataTree.java
++++ b/src/java/main/org/apache/zookeeper/server/DataTree.java
+@@ -458,7 +458,7 @@ public void createNode(final String path, byte data[], List<ACL> acl,
+         }
+         synchronized (parent) {
+             Set<String> children = parent.getChildren();
+-            if (children.contains(childName)) {
++            if (children != null && children.contains(childName)) {
+                 throw new KeeperException.NodeExistsException();
+             }
+ 
+@@ -516,6 +516,10 @@ public void createNode(final String path, byte data[], List<ACL> acl,
+                 Event.EventType.NodeChildrenChanged);
+     }
+ 
++    public void deleteContainerNode(String path, long zxid)
++            throws KeeperException.NoNodeException {
++        deleteNode(path,zxid);
++    }
+     /**
+      * remove the path from the datatree
+      *
+@@ -677,7 +681,13 @@ public Stat statNode(String path, Watcher watcher)
+             if (stat != null) {
+                 n.copyStat(stat);
+             }
+-            List<String> children=new ArrayList<String>(n.getChildren());
++            ArrayList<String> children;
++            Set<String> childs = n.getChildren();
++            if (childs == null) {
++                children = new ArrayList<String>(0);
++            } else {
++                children = new ArrayList<String>(childs);
++            }
+ 
+             if (watcher != null) {
+                 childWatches.addWatch(path, watcher);
+@@ -834,11 +844,15 @@ public ProcessTxnResult processTxn(TxnHeader header, Record txn)
+                     rc.stat = stat;
+                     break;
+                 case OpCode.delete:
+-                case OpCode.deleteContainer:
+                     DeleteTxn deleteTxn = (DeleteTxn) txn;
+                     rc.path = deleteTxn.getPath();
+                     deleteNode(deleteTxn.getPath(), header.getZxid());
+                     break;
++                case OpCode.deleteContainer:
++                    deleteTxn = (DeleteTxn) txn;
++                    rc.path = deleteTxn.getPath();
++                    deleteContainerNode(deleteTxn.getPath(), header.getZxid());
++                    break;
+                 case OpCode.reconfig:
+                 case OpCode.setData:
+                     SetDataTxn setDataTxn = (SetDataTxn) txn;
+@@ -1050,12 +1064,17 @@ private void getCounts(String path, Counts counts) {
+         int len = 0;
+         synchronized (node) {
+             Set<String> childs = node.getChildren();
+-            children = childs.toArray(new String[childs.size()]);
++            if (childs != null) {
++                children = childs.toArray(new String[childs.size()]);
++            }
+             len = (node.data == null ? 0 : node.data.length);
+         }
+         // add itself
+         counts.count += 1;
+         counts.bytes += len;
++        if (children == null || children.length == 0) {
++            return;
++        }
+         for (String child : children) {
+             getCounts(path + "/" + child, counts);
+         }
+@@ -1095,9 +1114,11 @@ private void traverseNode(String path) {
+         String children[] = null;
+         synchronized (node) {
+             Set<String> childs = node.getChildren();
+-            children = childs.toArray(new String[childs.size()]);
++            if (childs != null) {
++                children = childs.toArray(new String[childs.size()]);
++            }
+         }
+-        if (children.length == 0) {
++        if (children == null || children.length == 0) {
+             // this node does not have a child
+             // is the leaf node
+             // check if its the leaf node
+@@ -1156,19 +1177,23 @@ void serializeNode(OutputArchive oa, StringBuilder path) throws IOException {
+             //are never changed
+             nodeCopy = new DataNode(node.data, node.acl, statCopy);
+             Set<String> childs = node.getChildren();
+-            children = childs.toArray(new String[childs.size()]);
++            if (childs != null) {
++                children = childs.toArray(new String[childs.size()]);
++            }
+         }
+         oa.writeString(pathString, "path");
+         oa.writeRecord(nodeCopy, "node");
+         path.append('/');
+         int off = path.length();
+-        for (String child : children) {
+-            // since this is single buffer being resused
+-            // we need
+-            // to truncate the previous bytes of string.
+-            path.delete(off, Integer.MAX_VALUE);
+-            path.append(child);
+-            serializeNode(oa, path);
++        if (children != null) {
++            for (String child : children) {
++                // since this is single buffer being resused
++                // we need
++                // to truncate the previous bytes of string.
++                path.delete(off, Integer.MAX_VALUE);
++                path.append(child);
++                serializeNode(oa, path);
++            }
+         }
+     }
+ 
+diff --git a/src/java/main/org/apache/zookeeper/server/PrepRequestProcessor.java b/src/java/main/org/apache/zookeeper/server/PrepRequestProcessor.java
+index 9ad4eea83..007b0668d 100644
+--- a/src/java/main/org/apache/zookeeper/server/PrepRequestProcessor.java
++++ b/src/java/main/org/apache/zookeeper/server/PrepRequestProcessor.java
+@@ -168,7 +168,8 @@ private ChangeRecord getRecordForPath(String path) throws KeeperException.NoNode
+                     synchronized(n) {
+                         children = n.getChildren();
+                     }
+-                    lastChange = new ChangeRecord(-1, path, n.stat, children.size(),
++                    lastChange = new ChangeRecord(-1, path, n.stat,
++                        children != null ? children.size() : 0,
+                             zks.getZKDatabase().aclForNode(n));
+                 }
+             }
+diff --git a/src/java/main/org/apache/zookeeper/server/SnapshotFormatter.java b/src/java/main/org/apache/zookeeper/server/SnapshotFormatter.java
+index bc434020f..f94c54ddf 100644
+--- a/src/java/main/org/apache/zookeeper/server/SnapshotFormatter.java
++++ b/src/java/main/org/apache/zookeeper/server/SnapshotFormatter.java
+@@ -94,8 +94,10 @@ private void printZnode(DataTree dataTree, String name) {
+             }
+             children = n.getChildren();
+         }
+-        for (String child : children) {
+-            printZnode(dataTree, name + (name.equals("/") ? "" : "/") + child);
++        if (children != null) {
++            for (String child : children) {
++                printZnode(dataTree, name + (name.equals("/") ? "" : "/") + child);
++            }
+         }
+     }
+ 
+diff --git a/src/java/test/org/apache/zookeeper/server/DataNodeTest.java b/src/java/test/org/apache/zookeeper/server/DataNodeTest.java
+deleted file mode 100644
+index 628976604..000000000
+--- a/src/java/test/org/apache/zookeeper/server/DataNodeTest.java
++++ /dev/null
+@@ -1,65 +0,0 @@
+-/**
+- * Licensed to the Apache Software Foundation (ASF) under one
+- * or more contributor license agreements.  See the NOTICE file
+- * distributed with this work for additional information
+- * regarding copyright ownership.  The ASF licenses this file
+- * to you under the Apache License, Version 2.0 (the
+- * "License"); you may not use this file except in compliance
+- * with the License.  You may obtain a copy of the License at
+- *
+- *     http://www.apache.org/licenses/LICENSE-2.0
+- *
+- * Unless required by applicable law or agreed to in writing, software
+- * distributed under the License is distributed on an "AS IS" BASIS,
+- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+- * See the License for the specific language governing permissions and
+- * limitations under the License.
+- */
+-package org.apache.zookeeper.server;
+-
+-import static org.junit.Assert.*;
+-
+-import java.util.Set;
+-
+-import org.junit.Test;
+-
+-public class DataNodeTest {
+-
+-    @Test
+-    public void testGetChildrenShouldReturnEmptySetWhenThereAreNoChidren() {
+-        // create DataNode and call getChildren
+-        DataNode dataNode = new DataNode();
+-        Set<String> children = dataNode.getChildren();
+-        assertNotNull(children);
+-        assertEquals(0, children.size());
+-
+-        // add child,remove child and then call getChildren
+-        String child = "child";
+-        dataNode.addChild(child);
+-        dataNode.removeChild(child);
+-        children = dataNode.getChildren();
+-        assertNotNull(children);
+-        assertEquals(0, children.size());
+-
+-        // Returned empty set must not be modifiable
+-        children = dataNode.getChildren();
+-        try {
+-            children.add("new child");
+-            fail("UnsupportedOperationException is expected");
+-        } catch (UnsupportedOperationException e) {
+-            // do nothing
+-        }
+-    }
+-
+-    @Test
+-    public void testGetChildrenReturnsImmutableEmptySet() {
+-        DataNode dataNode = new DataNode();
+-        Set<String> children = dataNode.getChildren();
+-        try {
+-            children.add("new child");
+-            fail("UnsupportedOperationException is expected");
+-        } catch (UnsupportedOperationException e) {
+-            // do nothing
+-        }
+-    }
+-}

@@ -1,0 +1,5 @@
+#case specific
+commit_id=186bfb141d701362015f02f7d35515cf5b542e83
+test_name=org.apache.zookeeper.server.NettyServerCnxnTest
+
+#https://github.com/apache/zookeeper/pull/77/commits/186bfb141d701362015f02f7d35515cf5b542e83

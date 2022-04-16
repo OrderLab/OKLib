@@ -1,0 +1,175 @@
+diff --git a/pom.xml b/pom.xml
+index 14a4de1cde..04d736c141 100644
+--- a/pom.xml
++++ b/pom.xml
+@@ -1,6 +1,5 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
++<?xml version='1.0' encoding='UTF-8'?>
++<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+ <!--
+ /**
+  * Licensed to the Apache Software Foundation (ASF) under one
+@@ -30,7 +29,7 @@
+     <groupId>org.apache</groupId>
+     <artifactId>apache</artifactId>
+     <version>8</version>
+-    <relativePath></relativePath><!-- no parent resolution -->
++    <relativePath/><!-- no parent resolution -->
+   </parent>
+ 
+   <groupId>org.apache.hbase</groupId>
+@@ -469,7 +468,7 @@
+                     </goals>
+                   </pluginExecutionFilter>
+                   <action>
+-                    <execute></execute>
++                    <execute/>
+                   </action>
+                 </pluginExecution> 
+                 <pluginExecution>
+@@ -482,7 +481,7 @@
+                     </goals>
+                   </pluginExecutionFilter>
+                   <action>
+-                    <execute></execute>
++                    <execute/>
+                   </action>
+                 </pluginExecution>
+                 <pluginExecution>
+@@ -495,7 +494,7 @@
+                     </goals>
+                   </pluginExecutionFilter>
+                   <action>
+-                    <execute></execute>
++                    <execute/>
+                   </action>
+                 </pluginExecution>
+               </pluginExecutions>
+@@ -737,10 +736,8 @@
+             <phase>initialize</phase>
+             <configuration>
+               <tasks if="arc">
+-                <get dest="${project.build.directory}/arc-jira.tar.gz"
+-                     src="https://github.com/facebook/arc-jira/tarball/master"/>
+-                <untar src="${project.build.directory}/arc-jira.tar.gz" compression="gzip"
+-                 dest="${project.build.directory}">
++                <get dest="${project.build.directory}/arc-jira.tar.gz" src="https://github.com/facebook/arc-jira/tarball/master"/>
++                <untar src="${project.build.directory}/arc-jira.tar.gz" compression="gzip" dest="${project.build.directory}">
+                   <patternset>
+                     <include name="facebook-arc-jira-*/arc_jira_lib/**"/>
+                   </patternset>
+@@ -768,12 +765,9 @@
+             <phase>generate-sources</phase>
+             <configuration>
+               <target>
+-                <property name="build.webapps"
+-                          location="${project.build.directory}/hbase-webapps"/>
+-                <property name="src.webapps"
+-                          location="${basedir}/src/main/resources/hbase-webapps"/>
+-                <property name="generated.sources"
+-                          location="${project.build.directory}/generated-sources"/>
++                <property name="build.webapps" location="${project.build.directory}/hbase-webapps"/>
++                <property name="src.webapps" location="${basedir}/src/main/resources/hbase-webapps"/>
++                <property name="generated.sources" location="${project.build.directory}/generated-sources"/>
+ 
+                 <mkdir dir="${build.webapps}"/>
+                 <copy todir="${build.webapps}">
+@@ -788,16 +782,10 @@
+                 <taskdef classname="org.apache.jasper.JspC" name="jspcompiler" classpathref="maven.compile.classpath"/>
+ 
+                 <mkdir dir="${build.webapps}/master/WEB-INF"/>
+-                <jspcompiler uriroot="${src.webapps}/master"
+-                             outputdir="${generated.sources}/java"
+-                             package="org.apache.hadoop.hbase.generated.master"
+-                             webxml="${build.webapps}/master/WEB-INF/web.xml"/>
++                <jspcompiler uriroot="${src.webapps}/master" outputdir="${generated.sources}/java" package="org.apache.hadoop.hbase.generated.master" webxml="${build.webapps}/master/WEB-INF/web.xml"/>
+ 
+                 <mkdir dir="${build.webapps}/regionserver/WEB-INF"/>
+-                <jspcompiler uriroot="${src.webapps}/regionserver"
+-                             outputdir="${generated.sources}/java"
+-                             package="org.apache.hadoop.hbase.generated.regionserver"
+-                             webxml="${build.webapps}/regionserver/WEB-INF/web.xml"/>
++                <jspcompiler uriroot="${src.webapps}/regionserver" outputdir="${generated.sources}/java" package="org.apache.hadoop.hbase.generated.regionserver" webxml="${build.webapps}/regionserver/WEB-INF/web.xml"/>
+ 
+                 <exec executable="sh">
+                   <arg line="${basedir}/src/saveVersion.sh ${project.version} ${generated.sources}/java"/>
+@@ -812,8 +800,7 @@
+             <phase>process-resources</phase>
+             <configuration>
+               <target>
+-                <replace file="${project.build.outputDirectory}/hbase-default.xml"
+-                  token="@@@VERSION@@@" value="${project.version}" />
++                <replace file="${project.build.outputDirectory}/hbase-default.xml" token="@@@VERSION@@@" value="${project.version}"/>
+                 <mkdir dir="${project.build.directory}/nativelib"/>
+                 <exec executable="tar" dir="${project.build.directory}/nativelib" failonerror="false">
+                   <arg value="xf"/>
+@@ -845,11 +832,10 @@
+                 </exec>
+ 
+                 <!-- Using Unix tar to preserve symlinks -->
+-                <exec executable="tar" failonerror="yes"
+-                  dir="${project.build.directory}/${project.build.finalName}">
++                <exec executable="tar" failonerror="yes" dir="${project.build.directory}/${project.build.finalName}">
+                     <arg value="czf"/>
+                     <arg value="${project.build.directory}/${project.build.finalName}.tar.gz"/>
+-                    <arg value="${project.build.finalName}/" />
++                    <arg value="${project.build.finalName}/"/>
+                 </exec>
+ 
+               </target>
+@@ -1342,7 +1328,7 @@
+                 <phase>package</phase>
+                 <configuration>
+                   <target>
+-                    <property name="artifactId" value="${project.artifactId}" />
++                    <property name="artifactId" value="${project.artifactId}"/>
+                     <ant antfile="${basedir}/src/packages/build.xml">
+                       <target name="package-deb"/>
+                       <target name="package-conf-pseudo-deb"/>
+@@ -2007,7 +1993,7 @@
+ 
+         <surefire.skipFirstPart>false</surefire.skipFirstPart>
+         <surefire.skipSecondPart>true</surefire.skipSecondPart>
+-        <surefire.firstPartGroups></surefire.firstPartGroups>
++        <surefire.firstPartGroups/>
+       </properties>
+     </profile>
+ 
+@@ -2024,7 +2010,7 @@
+         <surefire.skipFirstPart>false</surefire.skipFirstPart>
+         <surefire.skipSecondPart>true</surefire.skipSecondPart>
+         <surefire.firstPartGroups>org.apache.hadoop.hbase.SmallTests</surefire.firstPartGroups>
+-        <surefire.secondPartGroups></surefire.secondPartGroups>
++        <surefire.secondPartGroups/>
+       </properties>
+     </profile>
+ 
+@@ -2038,7 +2024,7 @@
+         <surefire.skipFirstPart>false</surefire.skipFirstPart>
+         <surefire.skipSecondPart>true</surefire.skipSecondPart>
+         <surefire.firstPartGroups>org.apache.hadoop.hbase.MediumTests</surefire.firstPartGroups>
+-        <surefire.secondPartGroups></surefire.secondPartGroups>
++        <surefire.secondPartGroups/>
+       </properties>
+     </profile>
+ 
+@@ -2052,7 +2038,7 @@
+         <surefire.skipFirstPart>false</surefire.skipFirstPart>
+         <surefire.skipSecondPart>true</surefire.skipSecondPart>
+         <surefire.firstPartGroups>org.apache.hadoop.hbase.LargeTests</surefire.firstPartGroups>
+-        <surefire.secondPartGroups></surefire.secondPartGroups>
++        <surefire.secondPartGroups/>
+       </properties>
+     </profile>
+ 
+@@ -2114,7 +2100,7 @@
+         <surefire.firstPartForkMode>always</surefire.firstPartForkMode>
+         <surefire.skipFirstPart>false</surefire.skipFirstPart>
+         <surefire.skipSecondPart>true</surefire.skipSecondPart>
+-        <surefire.firstPartGroups></surefire.firstPartGroups>
++        <surefire.firstPartGroups/>
+       </properties>
+     </profile>
+   </profiles>

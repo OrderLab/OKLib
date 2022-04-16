@@ -1,0 +1,41 @@
+diff --git a/hadoop-hdfs-project/hadoop-hdfs-httpfs/pom.xml b/hadoop-hdfs-project/hadoop-hdfs-httpfs/pom.xml
+index 9be99ae8a9d..9b7648f34dd 100644
+--- a/hadoop-hdfs-project/hadoop-hdfs-httpfs/pom.xml
++++ b/hadoop-hdfs-project/hadoop-hdfs-httpfs/pom.xml
+@@ -314,21 +314,21 @@
+           </execution>
+         </executions>
+       </plugin>
+-      <plugin>
+-        <groupId>org.apache.maven.plugins</groupId>
+-        <artifactId>maven-project-info-reports-plugin</artifactId>
+-        <executions>
+-          <execution>
+-            <configuration>
+-              <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
+-            </configuration>
+-            <goals>
+-              <goal>dependencies</goal>
+-            </goals>
+-            <phase>package</phase>
+-          </execution>
+-        </executions>
+-      </plugin>
++<!--      <plugin>-->
++<!--        <groupId>org.apache.maven.plugins</groupId>-->
++<!--        <artifactId>maven-project-info-reports-plugin</artifactId>-->
++<!--        <executions>-->
++<!--          <execution>-->
++<!--            <configuration>-->
++<!--              <dependencyLocationsEnabled>false</dependencyLocationsEnabled>-->
++<!--            </configuration>-->
++<!--            <goals>-->
++<!--              <goal>dependencies</goal>-->
++<!--            </goals>-->
++<!--            <phase>package</phase>-->
++<!--          </execution>-->
++<!--        </executions>-->
++<!--      </plugin>-->
+       <plugin>
+         <groupId>org.apache.rat</groupId>
+         <artifactId>apache-rat-plugin</artifactId>

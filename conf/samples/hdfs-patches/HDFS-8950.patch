@@ -1,0 +1,33 @@
+diff --git a/hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/HostFileManager.java b/hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/HostFileManager.java
+index 0b8d6c5bc16..e05ef9a4047 100644
+--- a/hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/HostFileManager.java
++++ b/hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/blockmanagement/HostFileManager.java
+@@ -126,9 +126,28 @@ synchronized boolean hasIncludes() {
+     return !includes.isEmpty();
+   }
+ 
++  /**
++   * Read the includes and excludes lists from the named files.  Any previous
++   * includes and excludes lists are discarded.
++   * @param includeFile the path to the new includes list
++   * @param excludeFile the path to the new excludes list
++   * @throws IOException thrown if there is a problem reading one of the files
++   */
+   void refresh(String includeFile, String excludeFile) throws IOException {
+     HostSet newIncludes = readFile("included", includeFile);
+     HostSet newExcludes = readFile("excluded", excludeFile);
++
++    refresh(newIncludes, newExcludes);
++  }
++
++  /**
++   * Set the includes and excludes lists by the new HostSet instances. The
++   * old instances are discarded.
++   * @param newIncludes the new includes list
++   * @param newExcludes the new excludes list
++   */
++  @VisibleForTesting
++  void refresh(HostSet newIncludes, HostSet newExcludes) {
+     synchronized (this) {
+       includes = newIncludes;
+       excludes = newExcludes;

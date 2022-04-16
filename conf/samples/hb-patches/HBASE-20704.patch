@@ -1,0 +1,44 @@
+diff --git a/pom.xml b/pom.xml
+index bd0cea67cd..28d7b58b5e 100755
+--- a/pom.xml
++++ b/pom.xml
+@@ -759,18 +759,18 @@
+           <artifactId>buildnumber-maven-plugin</artifactId>
+           <version>${buildnumber.maven.version}</version>
+         </plugin>
+-        <plugin>
++<!--        <plugin>
+           <groupId>org.codehaus.mojo</groupId>
+           <artifactId>findbugs-maven-plugin</artifactId>
+           <version>${findbugs.maven.version}</version>
+-          <!--NOTE: Findbugs 3.0.0 requires jdk7-->
++          &lt;!&ndash;NOTE: Findbugs 3.0.0 requires jdk7&ndash;&gt;
+           <configuration>
+             <excludeFilterFile>${project.basedir}/../dev-support/findbugs-exclude.xml</excludeFilterFile>
+             <findbugsXmlOutput>true</findbugsXmlOutput>
+             <xmlOutput>true</xmlOutput>
+             <effort>Max</effort>
+           </configuration>
+-        </plugin>
++        </plugin>-->
+         <plugin>
+           <groupId>org.codehaus.mojo</groupId>
+           <artifactId>build-helper-maven-plugin</artifactId>
+@@ -1234,7 +1234,7 @@
+       </plugin>
+       <!-- Special configuration for findbugs just in the parent so
+       the filter file location can be more general (see definition in pluginManagement) -->
+-      <plugin>
++      <!--<plugin>
+         <groupId>org.codehaus.mojo</groupId>
+         <artifactId>findbugs-maven-plugin</artifactId>
+         <executions>
+@@ -1248,7 +1248,7 @@
+             </configuration>
+           </execution>
+         </executions>
+-      </plugin>
++      </plugin>-->
+       <plugin>
+         <groupId>org.apache.maven.plugins</groupId>
+         <artifactId>maven-checkstyle-plugin</artifactId>

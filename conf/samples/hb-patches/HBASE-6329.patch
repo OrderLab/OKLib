@@ -1,0 +1,40 @@
+diff --git a/pom.xml b/pom.xml
+index 88c452766b..3740bd3c60 100644
+--- a/pom.xml
++++ b/pom.xml
+@@ -468,7 +468,7 @@
+             </filesets>
+           </configuration>
+         </plugin>
+-        <plugin>
++<!--        <plugin>
+           <groupId>org.codehaus.mojo</groupId>
+           <artifactId>findbugs-maven-plugin</artifactId>
+           <version>${findbugs.version}</version>
+@@ -478,7 +478,7 @@
+             <xmlOutput>true</xmlOutput>
+             <effort>Max</effort>
+           </configuration>
+-        </plugin>
++        </plugin>-->
+         <!-- Build plugins -->
+         <plugin>
+           <groupId>org.apache.avro</groupId>
+@@ -762,7 +762,7 @@
+       </plugin>
+       <!-- Special configuration for findbugs just in the parent so
+       the filter file location can be more general (see definition in pluginManagement) -->
+-      <plugin>
++<!--      <plugin>
+         <groupId>org.codehaus.mojo</groupId>
+         <artifactId>findbugs-maven-plugin</artifactId>
+         <executions>
+@@ -776,7 +776,7 @@
+             </configuration>
+           </execution>
+         </executions>
+-      </plugin>
++      </plugin>-->
+     </plugins>
+   </build>
+   <properties>

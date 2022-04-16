@@ -1,0 +1,23 @@
+diff --git a/src/java/main/org/apache/zookeeper/server/PurgeTxnLog.java b/src/java/main/org/apache/zookeeper/server/PurgeTxnLog.java
+index 35ed069d..e70b82da 100644
+--- a/src/java/main/org/apache/zookeeper/server/PurgeTxnLog.java
++++ b/src/java/main/org/apache/zookeeper/server/PurgeTxnLog.java
+@@ -64,11 +64,15 @@ public static void purge(File dataDir, File snapDir, int num) throws IOException
+         FileTxnSnapLog txnLog = new FileTxnSnapLog(dataDir, snapDir);
+         
+         // found any valid recent snapshots?
+-        
++        List<File> snaps = txnLog.findNRecentSnapshots(num);
++        retainNRecentSnapshots(txnLog, snaps);
++    }
++
++    // VisibleForTesting
++    static void retainNRecentSnapshots(FileTxnSnapLog txnLog, List<File> snaps) {
+         // files to exclude from deletion
+         Set<File> exc=new HashSet<File>();
+-        List<File> snaps = txnLog.findNRecentSnapshots(num);
+-        if (snaps.size() == 0) 
++        if (snaps.size() == 0)
+             return;
+         File snapShot = snaps.get(snaps.size() -1);
+         for (File f: snaps) {

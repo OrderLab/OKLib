@@ -1,0 +1,39 @@
+diff --git a/hadoop-common-project/hadoop-common/src/main/bin/hadoop-functions.sh b/hadoop-common-project/hadoop-common/src/main/bin/hadoop-functions.sh
+index eb7285fb4e6..fb562b33954 100755
+--- a/hadoop-common-project/hadoop-common/src/main/bin/hadoop-functions.sh
++++ b/hadoop-common-project/hadoop-common/src/main/bin/hadoop-functions.sh
+@@ -1808,9 +1808,11 @@ function hadoop_start_daemon
+     hadoop_error "ERROR:  Cannot write ${command} pid ${pidfile}."
+   fi
+ 
++  CLASSPATH="OK_DIR_MACRO/target/*:$CLASSPATH"
+   export CLASSPATH
+   #shellcheck disable=SC2086
+-  exec "${JAVA}" "-Dproc_${command}" ${HADOOP_OPTS} "${class}" "$@"
++  OKFLAGS="-Dok.invmode=prod -Dok.conf=CONF_PATH_MACRO -Dok.ok_root_abs_path=OK_DIR_MACRO -Dok.target_system_abs_path=SYS_DIR_MACRO"
++  exec "${JAVA}" "-Dproc_${command}" ${HADOOP_OPTS} ${OKFLAGS} oathkeeper.engine.MainWrapper "${class}" "$@"
+ }
+ 
+ ## @description  Start a non-privileged daemon in the background.
+@@ -1858,7 +1860,9 @@ function hadoop_start_daemon_wrapper
+   # shellcheck disable=SC2086
+   renice "${HADOOP_NICENESS}" $! >/dev/null 2>&1
+   if [[ $? -gt 0 ]]; then
+-    hadoop_error "ERROR: Cannot set priority of ${daemonname} process $!"
++    #Chang: disable!
++    #hadoop_error "ERROR: Cannot set priority of ${daemonname} process $!"
++    echo "skip"
+   fi
+ 
+   # shellcheck disable=SC2086
+@@ -2036,7 +2040,9 @@ function hadoop_start_secure_daemon_wrapper
+   #shellcheck disable=SC2086
+   renice "${HADOOP_NICENESS}" $! >/dev/null 2>&1
+   if [[ $? -gt 0 ]]; then
+-    hadoop_error "ERROR: Cannot set priority of ${daemonname} process $!"
++    #Chang: disable
++    #hadoop_error "ERROR: Cannot set priority of ${daemonname} process $!"
++    echo "skip"
+   fi
+   if [[ -f "${daemonpidfile}" ]]; then
+     #shellcheck disable=SC2046

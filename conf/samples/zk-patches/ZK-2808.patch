@@ -1,0 +1,14 @@
+diff --git a/src/java/main/org/apache/zookeeper/server/DataTree.java b/src/java/main/org/apache/zookeeper/server/DataTree.java
+index f0ab2b39..a846a1d6 100644
+--- a/src/java/main/org/apache/zookeeper/server/DataTree.java
++++ b/src/java/main/org/apache/zookeeper/server/DataTree.java
+@@ -1436,4 +1436,9 @@ public boolean removeWatch(String path, WatcherType type, Watcher watcher) {
+         }
+         return removed;
+     }
++
++    // visible for testing
++    public ReferenceCountedACLCache getReferenceCountedAclCache() {
++        return aclCache;
++    }
+ }

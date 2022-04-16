@@ -1,0 +1,81 @@
+diff --git a/hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/namenode/ha/EditLogTailer.java b/hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/namenode/ha/EditLogTailer.java
+index d27947b9952..4d86d058c57 100644
+--- a/hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/namenode/ha/EditLogTailer.java
++++ b/hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/server/namenode/ha/EditLogTailer.java
+@@ -18,6 +18,7 @@
+ 
+ package org.apache.hadoop.hdfs.server.namenode.ha;
+ 
++import java.io.File;
+ import java.io.IOException;
+ import java.net.InetSocketAddress;
+ import java.security.PrivilegedAction;
+@@ -380,11 +381,23 @@ public long getLastLoadTimeMs() {
+     return lastLoadTimeMs;
+   }
+ 
++  public static boolean ifFaultInjected(String faultID)
++  {
++    boolean result = new File("./fault."+faultID).isFile();
++    if(result)
++      System.out.println("CHANG: fault "+faultID+"triggered!");
++    return result;
++  }
++
++
+   /**
+    * @return true if the configured log roll period has elapsed.
+    */
+   private boolean tooLongSinceLastLoad() {
+-    return logRollPeriodMs >= 0 && 
++    if(ifFaultInjected("HDFS-14317"))
++        return false;
++
++    return logRollPeriodMs >= 0 &&
+       (monotonicNow() - lastRollTimeMs) > logRollPeriodMs;
+   }
+
+@@ -469,8 +482,10 @@ private void doWork() {
+           // read any more transactions since the last time a roll was
+           // triggered.
+           boolean triggeredLogRoll = false;
+-          if (tooLongSinceLastLoad() &&
+-              lastRollTriggerTxId < lastLoadedTxnId) {
++          if (tooLongSinceLastLoad() ){
++            //CHANG: tweak
++            //if (tooLongSinceLastLoad() &&
++            //    lastRollTriggerTxId < lastLoadedTxnId) {
+             triggerActiveLogRoll();
+             triggeredLogRoll = true;
+           }
+diff --git a/hadoop-project/pom.xml b/hadoop-project/pom.xml
+index f8e73d18776..ae71841a8d9 100644
+--- a/hadoop-project/pom.xml
++++ b/hadoop-project/pom.xml
+@@ -482,13 +482,6 @@
+         <version>${hadoop.version}</version>
+       </dependency>
+
+-      <dependency>
+-        <groupId>org.apache.hadoop</groupId>
+-        <artifactId>hadoop-yarn-applications-catalog-webapp</artifactId>
+-        <version>${hadoop.version}</version>
+-        <type>war</type>
+-      </dependency>
+-
+       <dependency>
+         <groupId>org.apache.hadoop</groupId>
+          <artifactId>hadoop-mapreduce-client-jobclient</artifactId>
+diff --git a/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-applications/hadoop-yarn-applications-catalog/pom.xml b/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-applications/hadoop-yarn-applications-catalog/pom.xml
+index f62a8f468f8..f55f0d04ad5 100644
+--- a/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-applications/hadoop-yarn-applications-catalog/pom.xml
++++ b/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-applications/hadoop-yarn-applications-catalog/pom.xml
+@@ -31,7 +31,5 @@
+     <url>https://hadoop.apache.org</url>
+
+     <modules>
+-      <module>hadoop-yarn-applications-catalog-webapp</module>
+-      <module>hadoop-yarn-applications-catalog-docker</module>
+     </modules>
+ </project>
+

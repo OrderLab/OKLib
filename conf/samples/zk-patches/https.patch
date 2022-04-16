@@ -1,0 +1,30 @@
+#this patch is to fix https issues for old zookeeper compilation issue
+diff --git a/build.xml b/build.xml
+index 9b134f17..f448fcaa 100644
+--- a/build.xml
++++ b/build.xml
+@@ -99,7 +99,7 @@
+
+     <property name="ivy.version" value="2.2.0"/>
+     <property name="ivy.url"
+-              value="http://repo2.maven.org/maven2/org/apache/ivy/ivy" />
++              value="https://repo1.maven.org/maven2/org/apache/ivy/ivy" />
+     <property name="ivy.home" value="${user.home}/.ant" />
+     <property name="ivy.lib" value="${build.dir}/lib"/>
+     <property name="ivy.package.lib" value="${build.dir}/package/lib"/>
+diff --git a/ivysettings.xml b/ivysettings.xml
+index 52cfa52d..f4db43f3 100644
+--- a/ivysettings.xml
++++ b/ivysettings.xml
+@@ -18,9 +18,9 @@
+ -->
+
+   <property name="repo.maven.org"
+-    value="http://repo1.maven.org/maven2/" override="false"/>
++    value="https://repo1.maven.org/maven2/" override="false"/>
+   <property name="repo.jboss.org"
+-    value="http://repository.jboss.org/nexus/content/groups/public/" override="false"/>
++    value="https://repository.jboss.org/nexus/content/groups/public/" override="false"/>
+   <property name="repo.sun.org"
+     value="http://download.java.net/maven/2/" override="false"/>
+   <property name="maven2.pattern"
