@@ -171,8 +171,7 @@ ticket_collection_path=${ok_dir}/conf/samples/hdfs-collections-basic
 ## Execute (~15 h)
 
 ```bash
-nohup bash ./run_engine.sh runall_foreach conf/samples/zk-3.6.1.properties &> ./log_zk &
-nohup bash ./run_engine.sh runall_foreach conf/samples/hdfs-3.2.1.properties  &> ./log_hdfs &
+nohup bash ./run_engine.sh runall_foreach conf/samples/zk-3.6.1.properties &> ./log_zk && bash ./run_engine.sh runall_foreach conf/samples/hdfs-3.2.1.properties  &> ./log_hdfs &
 ```
 
 We suggest using `nohup` to run as background process as this takes significant long time. If target system compilation fails, try restarting the execution commands.
