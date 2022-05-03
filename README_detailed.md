@@ -75,6 +75,7 @@ Edit the downloaded `tmux_input` file and replace all hostnames with your own cl
 ssh NODE1 # should be your own hostname
 ```
 
+Make sure you can ssh to other nodes from NODE1.
 
 Then run
 ```
