@@ -97,7 +97,7 @@ Running the experiments require additional dependencies (golang-go for zk benchm
 
 ```bash
 sudo apt-get update
-sudo apt-get -y git maven ant vim openjdk-8-jdk golang-go gnuplot
+sudo apt-get install -y git maven ant vim openjdk-8-jdk golang-go gnuplot
 sudo update-alternatives --set java $(sudo update-alternatives --list java | grep "java-8")
 ```
 
@@ -110,6 +110,9 @@ HDFS.
 ```bash
 git clone git@github.com:apache/zookeeper.git
 git clone git@github.com:apache/hadoop.git
+git clone https://github.com/OrderLab/OathKeeper.git
+cd OathKeeper
+git submodule update --init --recursive
 ```
 
 Modify `conf/samples/zk-3.6.1.properties` and change this line to be the absolute path to Zookeeper root dir, for example
