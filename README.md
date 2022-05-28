@@ -128,6 +128,7 @@ use [Zookeeper](https://github.com/apache/zookeeper) as an example:
 git clone git@github.com:apache/zookeeper.git
 cd zookeeper && pwd
 ```
+If you have problems with using SSH to clone, you can use HTTPS `git clone https://github.com/apache/zookeeper.git` instead.
 
 Record the full path to the ZooKeeper repository (e.g. `/home/chang/zookeeper`),
 which will be used as input in the next step.
@@ -434,7 +435,7 @@ Second, some JVM flags need to be added:
 * `-Dok.ok_root_abs_path=OK_DIR_MACRO`
 * `-Dok.target_system_abs_path=SYS_DIR_MACRO`
 
-For example, to modify for zookeeper 3.6.1, here is an sample on its `bin/zkEnv.sh`
+For example, to modify for zookeeper 3.6.1, here is an sample on its `bin/zkServer.sh`
 ```patch
 +    OKFLAGS="-Dok.invmode=prod -Dok.conf=CONF_PATH_MACRO -Dok.ok_root_abs_path=OK_DIR_MACRO -Dok.target_system_abs_path=SYS_DIR_MACRO"
      nohup "$JAVA" $ZOO_DATADIR_AUTOCREATE "-Dzookeeper.log.dir=${ZOO_LOG_DIR}" \
@@ -516,3 +517,7 @@ Please see the [README_detailed.md](README_detailed.md) for further instructions
 ## Publication
 
 > Chang Lou, Yuzhuo Jing, and Peng Huang. **Demystifying and Checking Silent Semantic Violations in Large Distributed Systems**. To appear in Proceedings of the 16th USENIX Symposium on Operating Systems Design and Implementation (OSDI '22), Carlsbad, CA, USA, July 2022.
+
+## Acknowledgement
+
+We very appreciate the reviewers of OSDI'22 Artifact Evaluation try out this tool and provide useful feedbacks.
