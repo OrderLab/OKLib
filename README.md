@@ -9,7 +9,7 @@ leverages the *old* silent semantic failures in this system to infer the
 underlying essential semantic rules. It then enforces these rules at runtime
 for systems to catch *new*, unseen semantic violations.
 
-<img src="https://sysartifacts.github.io/osdi2021/usenixbadges-available.png" alt="drawing" width="100"/> <img src="https://sysartifacts.github.io/osdi2021/usenixbadges-functional.png" alt="drawing" width="100"/> <img src="https://sysartifacts.github.io/osdi2021/usenixbadges-reproduced.png" alt="drawing" width="100"/>
+<img src="https://sysartifacts.github.io/images/usenix_available.svg" alt="drawing" width="100"/> <img src="https://sysartifacts.github.io/images/usenix_functional.svg" alt="drawing" width="100"/> <img src="https://sysartifacts.github.io/images/usenix_reproduced.svg" alt="drawing" width="100"/>
 
 Table of Contents
 =================
