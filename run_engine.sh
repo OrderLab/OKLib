@@ -663,6 +663,14 @@ then
         git apply tmp.patch
         rm tmp.patch
         cp hadoop-common-project/hadoop-common/src/main/bin/hadoop-functions.sh hadoop-dist/target/hadoop-${version}/libexec/
+    elif [[ $3 == "hdfs_14514" ]]
+    then
+        perl -p -e "${str}" ${ok_dir}/conf/samples/hdfs-patches/install_hdfs_14514.patch > tmp.patch
+        version=$(perl -ne 'print and last if s/.*<version>(.*)<\/version>.*/\1/;' < pom.xml)
+        cat tmp.patch
+        git apply tmp.patch
+        rm tmp.patch
+        cp hadoop-hdfs-project/hadoop-hdfs/src/main/bin/hdfs hadoop-dist/target/hadoop-${version}/bin/
     else
         echo "[ERROR] missing legal preset system name"
         return
