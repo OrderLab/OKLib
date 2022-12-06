@@ -30,6 +30,7 @@ public class ConfigManager {
     public static String SYSTEM_DIR_PATH_KEY = "system_dir_path";
     public static String SYSTEM_PACKAGE_PREFIX_KEY = "system_package_prefix";
     public static String TEST_CLASS_NAME_REGEX_KEY = "test_class_name_regex";
+    public static String JVM_ARGS_FOR_TESTS_KEY = "jvm_args_for_tests";
     public static String SPECIFIED_TEST_CLASS_LIST_KEY = "specified_test_class_list";
     public static String EXCLUDED_TEST_METHOD_LIST_KEY = "excluded_test_method_list";
     public static String OP_INTERFACE_CLASS_LIST_KEY = "op_interface_class_list";
@@ -65,6 +66,10 @@ public class ConfigManager {
             String system_dir_path = config.getString(SYSTEM_DIR_PATH_KEY);
             String prefix = config.getString(SYSTEM_PACKAGE_PREFIX_KEY);
             String regex = config.getString(TEST_CLASS_NAME_REGEX_KEY);
+            // trim double quote
+            config.setProperty(JVM_ARGS_FOR_TESTS_KEY,
+                config.getString(JVM_ARGS_FOR_TESTS_KEY).replaceAll("^\"|\"$", ""));
+            String jvm_args = config.getString(JVM_ARGS_FOR_TESTS_KEY);
             String[] specifiedClassList = config.getStringArray(SPECIFIED_TEST_CLASS_LIST_KEY);
             String[] excludedMethodList = config.getStringArray(EXCLUDED_TEST_METHOD_LIST_KEY);
             String[] interfaceClassList = config.getStringArray(OP_INTERFACE_CLASS_LIST_KEY);
@@ -89,6 +94,7 @@ public class ConfigManager {
             System.out.println(SYSTEM_DIR_PATH_KEY + ":" + system_dir_path);
             System.out.println(SYSTEM_PACKAGE_PREFIX_KEY + ":" + prefix);
             System.out.println(TEST_CLASS_NAME_REGEX_KEY + ":" + regex);
+            System.out.println(JVM_ARGS_FOR_TESTS_KEY + ":" + jvm_args);
             System.out.println(SPECIFIED_TEST_CLASS_LIST_KEY + ":" + Arrays.toString(specifiedClassList));
             System.out.println(EXCLUDED_TEST_METHOD_LIST_KEY + ":" + Arrays.toString(excludedMethodList));
             System.out.println(OP_INTERFACE_CLASS_LIST_KEY + ":" + Arrays.toString(interfaceClassList));

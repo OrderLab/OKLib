@@ -11,8 +11,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -63,7 +62,7 @@ public class TestEngine {
 
         String rootPath = System.getProperty("user.dir");
 
-        ProcessBuilder builder = new ProcessBuilder(
+        List<String> cmds = new ArrayList<>(Arrays.asList(
                 javaBin, "-cp", classpath,
                 "-Dok.testname="+klass,
                 "-Dok.invmode="+System.getProperty("ok.invmode"),
@@ -78,7 +77,13 @@ public class TestEngine {
                 "-Dok.target_system_abs_path="+System.getProperty("ok.target_system_abs_path"),
                 "-Dok.test_trace_prefix="+System.getProperty("ok.test_trace_prefix"),
                 "-Dok.verify_test_package="+System.getProperty("ok.verify_test_package"),
-                className);
+        ));
+
+        String jvm_args = ConfigManager.config.getString(ConfigManager.JVM_ARGS_FOR_TESTS_KEY);
+        if (!jvm_args.equals(""))
+            cmds.addAll(Arrays.asList(jvm_args.split("\\s+")));
+        cmds.add(className);
+        ProcessBuilder builder = new ProcessBuilder(cmds);
 
         Process process = builder.inheritIO().start();
         //set the timeout threshold to be

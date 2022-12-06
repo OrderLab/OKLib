@@ -84,6 +84,7 @@ gentrace_test () {
       -Dok.ok_root_abs_path=${ok_dir} -Dok.target_system_abs_path=${system_dir_path} \
       -Dok.test_trace_prefix=${test_trace_prefix} \
       -Dok.ticket_id=${ticket_id} \
+      ${jvm_args_for_tests} \
       oathkeeper.engine.tester.TestEngine)
 
     if [ $? -eq 124 ]
@@ -185,6 +186,8 @@ verify ()
       -Dok.ok_root_abs_path=${ok_dir} -Dok.target_system_abs_path=${system_dir_path} \
       -Dok.ticket_id=${ticket_id} -Dok.verify_test_package=${verify_test_package} \
       oathkeeper.engine.tester.TestEngine)
+      # jvm_args_for_tests does not need to be set here. TestEngine main mode
+      # will spawn child with jvm_args_for_tests according to properties file.
 
     if [ $? -eq 124 ]
     then
