@@ -7,9 +7,11 @@ fi
 
 set -x
 
+cd $1
+./run_engine.sh clean conf/samples/hdfs-3.2.1.properties
 cd $2
 # parent of the fix commit cecba551aa3b03142830cfd58f548cb6b125ee7b
-git checkout e3d4f6bfed493d6c2bf574fd0a7f104442f62218
+git checkout -f e3d4f6bfed493d6c2bf574fd0a7f104442f62218
 
 # For native and for C API
 # fix openssl breaking change
