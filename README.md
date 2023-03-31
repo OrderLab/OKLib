@@ -52,7 +52,7 @@ Table of Contents
   - To reproduce the failures in our evaluated distributed systems and meet the `Results Reproduced` requirements, we recommend that you use a **cluster of 5 nodes**. 
 
 * Git (>= 2.16.2, version control)
-* Apache Maven (>= 3.6.3, for OathKeeper compilation)
+* Apache Maven (>= 3.6.3, for OKLib compilation)
 * Apache Ant (>= 1.10.9, artifact testing only, for zookeeper compilation)
 * JDK8 (openjdk recommended)
 
@@ -89,8 +89,8 @@ echo export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64 >> ~/.bashrc
 To clone from github:
 
 ```bash
-git clone https://github.com/OrderLab/OathKeeper.git
-cd OathKeeper
+git clone https://github.com/OrderLab/OKLib.git
+cd OKLib
 git submodule update --init --recursive
 ```
 
@@ -101,7 +101,7 @@ OKLib uses Maven for project management.
 To compile and run OKLib tests:
 
 ```bash
-cd OathKeeper && mvn package
+cd OKLib && mvn package
 ```
 
 You should see test passed:
@@ -216,7 +216,7 @@ compile_test_cmd="rm -f src/java/lib/ivy-2.2.0.jar && git apply ${ok_dir}/conf/s
 
 > :warning: WARNING: Before you execute this step, be aware that the automation scripts in OKLib applies clean operations to the target system repo, such as `git reset --hard ` and `git rm --cached -r .`. This is to ensure the repo is clean when switching between versions.
 
-For example, to generate traces from [ZOOKEEPER-1208](https://issues.apache.org/jira/browse/ZOOKEEPER-1208). Run following commands under OathKeeper root: 
+For example, to generate traces from [ZOOKEEPER-1208](https://issues.apache.org/jira/browse/ZOOKEEPER-1208). Run following commands under OKLib root: 
 
 ```bash
 ./run_engine.sh gentrace conf/samples/zk-3.6.1.properties conf/samples/zk-collections/ZK-1208.properties
@@ -386,14 +386,14 @@ ZooKeeper the ephemeral node that expires is not properly cleaned. At this step
 we instrument the ZooKeeper source codes to reproduce the failures later:
 
 ```bash
-cd OathKeeper
+cd OKLib
 ./misc/scripts/zookeeper/ZK-1496/install_ZK-1496.sh [path_to_OathKeeper_root] [path_to_Zookeeper_root]
 ```
 
 For example, 
 ```bash
-cd OathKeeper
-./misc/scripts/zookeeper/ZK-1496/install_ZK-1496.sh ~/OathKeeper ~/zookeeper
+cd OKLib
+./misc/scripts/zookeeper/ZK-1496/install_ZK-1496.sh ~/OKLib ~/zookeeper
 ```
 
 Retry if you encounter problems.
@@ -412,7 +412,7 @@ and related data structures need to be added, by either copying OKLib
 packed jar file to the class path of target system:
 
 ```bash
-cp target/OathKeeper-1.0-SNAPSHOT-jar-with-dependencies.jar [system_class_path]
+cp target/OKLib-1.0-SNAPSHOT-jar-with-dependencies.jar [system_class_path]
 ```
 
 or modify class path to include library.
@@ -467,14 +467,14 @@ to production systems, you should execute the next step instead.
 To start a zookeeper instance and reproduce ZK-1496, run:
 
 ```bash
-cd OathKeeper
+cd OKLib
 ./misc/scripts/zookeeper/ZK-1496/trigger_ZK-1496.sh [path_to_OathKeeper_root] [path_to_Zookeeper_root]
 ```
 
 for example, 
 ```bash
-cd OathKeeper
-./misc/scripts/zookeeper/ZK-1496/trigger_ZK-1496.sh ~/OathKeeper ~/zookeeper
+cd OKLib
+./misc/scripts/zookeeper/ZK-1496/trigger_ZK-1496.sh ~/OKLib ~/zookeeper
 ```
 
 The scripts would display signals when reproducing finished. We speed up the
@@ -523,4 +523,5 @@ Please see the [README_detailed.md](README_detailed.md) for further instructions
 ## Acknowledgement
 
 We very appreciate the reviewers of OSDI'22 Artifact Evaluation try out this tool and provide useful feedbacks.
+
 
