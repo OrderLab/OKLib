@@ -1,13 +1,15 @@
-# Source code repository for the Oathkeeper project
+# Source code repository for the OKLib project
 
 
 ## Overview
 
-Oathkeeper is a runtime verification toolchain to detect silent semantic
-violations in distributed systems. For a given system, Oathkeeper first
+OKLib[^1] is a runtime verification toolchain to detect silent semantic
+violations in distributed systems. For a given system, OKLib first
 leverages the *old* silent semantic failures in this system to infer the
 underlying essential semantic rules. It then enforces these rules at runtime
 for systems to catch *new*, unseen semantic violations.
+
+[^1]: previously known as Oathkeeper. The name was [inspired](http://www.valyriansteel.com/shop/game-of-thrones/oathkeeper/prod_55.html) by popular novel "A Song of Ice and Fire". We have renamed it to avoid potential political ambiguity.   
 
 <img src="https://sysartifacts.github.io/images/usenix_available.svg" alt="drawing" width="100"/> <img src="https://sysartifacts.github.io/images/usenix_functional.svg" alt="drawing" width="100"/> <img src="https://sysartifacts.github.io/images/usenix_reproduced.svg" alt="drawing" width="100"/>
 
@@ -16,8 +18,8 @@ Table of Contents
 * [Requirements](#requirements)
 * [Getting Started Instructions](#getting-started-instructions)
    * [0. Install dependencies](#0-install-dependencies)
-   * [1. Clone the Oathkeeper repository](#1-clone-the-oathkeeper-repository)
-   * [2. Build Oathkeeper (~1 min)](#2-build-oathkeeper-1-min)
+   * [1. Clone the OKLib repository](#1-clone-the-oathkeeper-repository)
+   * [2. Build OKLib (~1 min)](#2-build-oathkeeper-1-min)
    * [3. Get the target system (~2 min)](#3-get-the-target-system-2-min)
    * [4. Customize configurations to analyze target system](#4-customize-configurations-to-analyze-target-system)
       * [4.1 Target system config](#41-target-system-config)
@@ -27,7 +29,7 @@ Table of Contents
    * [7. Verify inferred rules (~20 min)](#7-verify-inferred-rules-20-min)
    * [8. Runtime detection](#8-runtime-detection)
       * [8.1 Inject failure triggers (~2 min)](#81-inject-failure-triggers-2-min)
-      * [8.2 Install Oathkeeper runtime (~1 min)](#82-install-oathkeeper-runtime-1-min)
+      * [8.2 Install OKLib runtime (~1 min)](#82-install-oathkeeper-runtime-1-min)
          * [8.2.1 Add dependency library to class path](#821-add-dependency-library-to-class-path)
          * [8.2.2 Modify startup scripts](#822-modify-startup-scripts)
       * [8.3 Load rules (~1 min)](#83-load-rules-1-min)
@@ -42,11 +44,11 @@ Table of Contents
 ## Requirements
 
 * OS and JDK:
-  - Oathkeeper is developed and tested under **Ubuntu 18.04** and **JDK 8**. 
+  - OKLib is developed and tested under **Ubuntu 18.04** and **JDK 8**. 
   - Other systems and newer JDKs may also work. We tested a few functionalities on macOS Catalina (10.15.7) but the test is not complete. 
 
 * Hardware: 
-  - The basic workflow of Oathkeeper described in this README, which should satisfy the `Artifacts Functional` requirements, can be done in just one single node.
+  - The basic workflow of OKLib described in this README, which should satisfy the `Artifacts Functional` requirements, can be done in just one single node.
   - To reproduce the failures in our evaluated distributed systems and meet the `Results Reproduced` requirements, we recommend that you use a **cluster of 5 nodes**. 
 
 * Git (>= 2.16.2, version control)
@@ -82,7 +84,7 @@ export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
 echo export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64 >> ~/.bashrc
 ```
 
-### 1. Clone the Oathkeeper repository
+### 1. Clone the OKLib repository
 
 To clone from github:
 
@@ -92,11 +94,11 @@ cd OathKeeper
 git submodule update --init --recursive
 ```
 
-### 2. Build Oathkeeper (~1 min)
+### 2. Build OKLib (~1 min)
 
-Oathkeeper uses Maven for project management.
+OKLib uses Maven for project management.
 
-To compile and run Oathkeeper tests:
+To compile and run OKLib tests:
 
 ```bash
 cd OathKeeper && mvn package
@@ -133,7 +135,7 @@ If you have problems with using SSH to clone, you can use HTTPS `git clone https
 Record the full path to the ZooKeeper repository (e.g. `/home/chang/zookeeper`),
 which will be used as input in the next step.
 
-No need to compile ZooKeeper at this stage. Oathkeeper will re-compile the 
+No need to compile ZooKeeper at this stage. OKLib will re-compile the 
 target system during the experiment.
 
 ### 4. Customize configurations to analyze target system
@@ -183,7 +185,7 @@ exclude_class_list=
 
 > :checkered_flag: For Artifact Evaluation: you can skip this subsection as well, since we already prepared the related recipes under `conf/samples/`.
 
-Oathkeeper leverages regression tests to infer semantic rules. Users should
+OKLib leverages regression tests to infer semantic rules. Users should
 provide recipes about these test cases. Note that such test case configurations 
 override the target system configurations.
 
@@ -212,7 +214,7 @@ compile_test_cmd="rm -f src/java/lib/ivy-2.2.0.jar && git apply ${ok_dir}/conf/s
 ```
 ### 5. Execute tests and generate traces (~1 min)
 
-> :warning: WARNING: Before you execute this step, be aware that the automation scripts in Oathkeeper applies clean operations to the target system repo, such as `git reset --hard ` and `git rm --cached -r .`. This is to ensure the repo is clean when switching between versions.
+> :warning: WARNING: Before you execute this step, be aware that the automation scripts in OKLib applies clean operations to the target system repo, such as `git reset --hard ` and `git rm --cached -r .`. This is to ensure the repo is clean when switching between versions.
 
 For example, to generate traces from [ZOOKEEPER-1208](https://issues.apache.org/jira/browse/ZOOKEEPER-1208). Run following commands under OathKeeper root: 
 
@@ -272,7 +274,7 @@ FAILURES!!!
 Tests run: 1,  Failures: 1
 ```
 
-They are from JUnit and are expected, as Oathkeeper performs both patched runs and buggy runs. The test in the buggy run is doomed to fail.
+They are from JUnit and are expected, as OKLib performs both patched runs and buggy runs. The test in the buggy run is doomed to fail.
 
 You should notice some new files (`org.apache.zookeeper.test.SessionInvalidationTest@testCreateAfterCloseShouldFail_patched` and `org.apache.zookeeper.test.SessionInvalidationTest@testCreateAfterCloseShouldFail_unpatched`) under `./trace_output` after generation finished, which looks like:
 
@@ -346,7 +348,7 @@ The generated output is under `./inv_infer_output`.
 ```
 ### 7. Verify inferred rules (~20 min)
 
-Verifying inferred rules can be time-consuming as Oathkeeper needs to execute all
+Verifying inferred rules can be time-consuming as OKLib needs to execute all
 test cases in the target system and check all inferred rules from the last step. 
 
 You can optionally speed up this step by turning on the survivor mode, which prevents
@@ -396,7 +398,7 @@ cd OathKeeper
 
 Retry if you encounter problems.
 
-#### 8.2 Install Oathkeeper runtime (~1 min)
+#### 8.2 Install OKLib runtime (~1 min)
 
 > :checkered_flag: For Artifact Evaluation: you can just execute and skip the remaining 8.2 section: 
 > ```bash
@@ -405,8 +407,8 @@ Retry if you encounter problems.
 
 ##### 8.2.1 Add dependency library to class path
 
-To invoke event recording and rule checking functionalities, Oathkeeper runtime
-and related data structures need to be added, by either copying Oathkeeper
+To invoke event recording and rule checking functionalities, OKLib runtime
+and related data structures need to be added, by either copying OKLib
 packed jar file to the class path of target system:
 
 ```bash
@@ -423,7 +425,7 @@ CLASSPATH="OK_DIR_MACRO/target/*:$CLASSPATH"
 
 Many popular distributed systems use scripts to start instances. There are two needed changes.  
 
-First, Oathkeeper needs to instrument classes of target system before they are
+First, OKLib needs to instrument classes of target system before they are
 loaded, thus it must start before any other class. We use a utility class
 called `MainWrapper` which replaces original Main class. The usage is simple:
 just use `MainWrapper` as new main class and add original main class name to
@@ -448,7 +450,7 @@ For example, to modify for zookeeper 3.6.1, here is an sample on its `bin/zkServ
 
 #### 8.3 Load rules (~1 min)
 
-Essentially copy verified rules to `{ok_dir}/inv_prod_input` so the Oathkeeper runtime would load them and check when the system is running.
+Essentially copy verified rules to `{ok_dir}/inv_prod_input` so the OKLib runtime would load them and check when the system is running.
 
 ```
 cp -r inv_verify_output/ inv_prod_input/
@@ -459,7 +461,7 @@ cp -r inv_verify_output/ inv_prod_input/
 
 ##### 8.4.1 Reproduce failures (~2 min)
 
-This step is for artifact evaluation only. If you are users to deploy Oathkeeper 
+This step is for artifact evaluation only. If you are users to deploy OKLib 
 to production systems, you should execute the next step instead.
 
 To start a zookeeper instance and reproduce ZK-1496, run:
@@ -510,7 +512,7 @@ Please see the [README_detailed.md](README_detailed.md) for further instructions
 
 ## Known Issues
 
-* Oathkeeper needs to compile and execute old versions of target systems. Such old versions, in some cases, depend on libraries that are already deprecated and no longer accesible, causing the target system not directly compilable. One workaround is to provide interface for users to manually add a patch to modify the project compilation configuration (such as pom.xml) of target system to disable certain modules that blocks compilation.
+* OKLib needs to compile and execute old versions of target systems. Such old versions, in some cases, depend on libraries that are already deprecated and no longer accesible, causing the target system not directly compilable. One workaround is to provide interface for users to manually add a patch to modify the project compilation configuration (such as pom.xml) of target system to disable certain modules that blocks compilation.
 
 * Rule inference and verification are memory-consuming process and could trigger a lot of GCs for if test execution trace is very long. We suggest using physical machines with larger memories. 
 
@@ -521,3 +523,4 @@ Please see the [README_detailed.md](README_detailed.md) for further instructions
 ## Acknowledgement
 
 We very appreciate the reviewers of OSDI'22 Artifact Evaluation try out this tool and provide useful feedbacks.
+
