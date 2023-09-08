@@ -1,0 +1,23 @@
+diff --git a/hadoop-hdfs-project/hadoop-hdfs/src/main/bin/hdfs b/hadoop-hdfs-project/hadoop-hdfs/src/main/bin/hdfs
+index b306698126c..f2deca40448 100755
+--- a/hadoop-hdfs-project/hadoop-hdfs/src/main/bin/hdfs
++++ b/hadoop-hdfs-project/hadoop-hdfs/src/main/bin/hdfs
+@@ -245,6 +245,7 @@ if [ "$cygwin" = true ]; then
+   HADOOP_MAPRED_HOME=$(cygpath -w "$HADOOP_MAPRED_HOME" 2>/dev/null)
+ fi
+ 
++CLASSPATH="OK_DIR_MACRO/target/*:$CLASSPATH"
+ export CLASSPATH=$CLASSPATH
+ 
+ HADOOP_OPTS="$HADOOP_OPTS -Dhadoop.security.logger=${HADOOP_SECURITY_LOGGER:-INFO,NullAppender}"
+@@ -316,6 +317,10 @@ elif [ "$starting_privileged_nfs" = "true" ] ; then
+            org.apache.hadoop.hdfs.nfs.nfs3.PrivilegedNfsGatewayStarter "$@"
+ else
+   # run it
++  if [ "$COMMAND" = "namenode" ] || [ "$COMMAND" = "secondarynamenode" ] || [ "$COMMAND" = "datanode" ]; then
++    OKFLAGS="-Dok.invmode=prod -Dok.conf=CONF_PATH_MACRO -Dok.ok_root_abs_path=OK_DIR_MACRO -Dok.target_system_abs_path=SYS_DIR_MACRO"
++    exec "$JAVA" -Dproc_$COMMAND $JAVA_HEAP_MAX $HADOOP_OPTS $OKFLAGS oathkeeper.engine.MainWrapper $CLASS "$@"
++  fi
+   exec "$JAVA" -Dproc_$COMMAND $JAVA_HEAP_MAX $HADOOP_OPTS $CLASS "$@"
+ fi
+ 
