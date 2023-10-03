@@ -95,7 +95,17 @@ public class DynamicClassModifier {
 
             Reflections reflections = new Reflections(prefix, new SubTypesScanner(false));
 
-            Set<String> allClasses  = reflections.getAllTypes();
+            Set<String> allClasses;
+            try {
+                allClasses = reflections.getAllTypes();
+            } catch (org.reflections8.ReflectionsException e) {
+                System.out.println("Reflection cannot find class: " + clazz);
+                e.printStackTrace();
+                continue;
+            }
+            System.out.print("Reflection successfully get classes: ");
+            System.out.println(allClasses);
+
             for(String clazz2:allClasses)
             {
                 opInstClasses.add(clazz2);
@@ -244,6 +254,7 @@ public class DynamicClassModifier {
                 total++;
                 cc.defrost();
             } catch (Exception e) {
+                System.out.println("appendTrackedStates failed on class: " + clazz);
                 e.printStackTrace();
             }
         }
@@ -425,7 +436,7 @@ public class DynamicClassModifier {
                 continue;
             }
             succMethodCounter += localCounter;
-            System.out.println("prepare for " + cName);
+            // System.out.println("prepare for " + cName);
         }
 
         System.out.println("succMethodCounter" + succMethodCounter + " failClassCounter" + failClassCounter);
@@ -576,7 +587,7 @@ public class DynamicClassModifier {
                 continue;
             }
             succMethodCounter += localCounter;
-            System.out.println("prepare for " + cName);
+            // System.out.println("prepare for " + cName);
         }
 
         System.out.println("succMethodCounter" + succMethodCounter + " failClassCounter" + failClassCounter);
@@ -586,6 +597,8 @@ public class DynamicClassModifier {
         for (CtClass ctClass : toDumpClasses.values()) {
             try {
                 ctClass.toClass();
+            } catch (javassist.CannotCompileException ex) {
+                // ex.printStackTrace();
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -637,7 +650,7 @@ public class DynamicClassModifier {
                     System.err.println("potential hints: reorder the class loading to bring forward oathkeeper javassist, this might be a conflict between oathkeeper and target system dependency");
                 }
             }
-            System.out.println("prepare for test " + testName);
+            // System.out.println("prepare for test " + testName);
         }
 
         System.out.println("suppress " + errCounters+" no method body errors in markEndOfTestMethods()");

@@ -1,0 +1,7 @@
+# https://issues.apache.org/jira/browse/CASSANDRA-15072
+# pregen_cmd="git reset --hard && git checkout 63ff65a8dd3a31e500ae5ec6232f1f9eade6fa3d && ant dtest-jar && ant clean"
+
+commit_id=d27c3ad0d2d006a5f156f0a2f2a24286d31c5069
+test_name=org.apache.cassandra.distributed.upgrade.CompactStorage2to3UpgradeTest
+test_trace_prefix=org.apache.cassandra.distributed.upgrade.CompactStorage2to3UpgradeTest
+compile_test_cmd="cp ${ok_dir}/conf/samples/cs-patches/build.properties.default . && git apply ${ok_dir}/conf/samples/cs-patches/{repo.patch,NPE.patch} && ant clean dtest-jar"

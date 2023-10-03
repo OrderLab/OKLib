@@ -1,0 +1,19 @@
+commit 527514109469b925ee310abf06848c8eb484da13
+Author: Blake Eggleston <bdeggleston@gmail.com>
+Date:   Thu Apr 25 15:18:07 2019 -0700
+
+    ninja: fix CASSANDRA-15078 NPE
+
+diff --git a/test/distributed/org/apache/cassandra/distributed/impl/AbstractCluster.java b/test/distributed/org/apache/cassandra/distributed/impl/AbstractCluster.java
+index 1dc7a657fa..c27d9bf2d8 100644
+--- a/test/distributed/org/apache/cassandra/distributed/impl/AbstractCluster.java
++++ b/test/distributed/org/apache/cassandra/distributed/impl/AbstractCluster.java
+@@ -141,7 +141,7 @@ public abstract class AbstractCluster<I extends IInstance> implements ICluster,
+         {
+             if (!isShutdown)
+                 throw new IllegalStateException();
+-            delegate.startup(AbstractCluster.this);
++            delegate().startup(AbstractCluster.this);
+             isShutdown = false;
+             updateMessagingVersions();
+         }

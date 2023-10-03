@@ -1,0 +1,8 @@
+# This is a feature ticket, and not a regression test, but still put here for
+# future reference.
+# https://issues.apache.org/jira/browse/CASSANDRA-14937
+#case specific
+commit_id=c100f1ac40137a0d6d0793930cdfce3845880a12
+test_name=org.apache.cassandra.distributed.upgrade.UpgradeTest
+test_trace_prefix=org.apache.cassandra.distributed.upgrade.UpgradeTest
+compile_test_cmd="cp ${ok_dir}/conf/samples/cs-patches/build.properties.default . && git apply ${ok_dir}/conf/samples/cs-patches/repo.patch && ant clean build-test"
